@@ -1,0 +1,109 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.SolicitBubbleFacade;
+import com.ejca.entity.Person;
+import com.ejca.entity.SolicitBubble;
+import com.ejca.entity.SolicitResponse;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import javax.annotation.PostConstruct;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+/**
+ *
+ * @author Nithya
+ */
+@ViewScoped
+@Named("solicit")
+@RolesAllowed("USERS")
+public class SolicitBubbleBB implements Serializable {
+
+    @EJB
+    SolicitBubbleFacade solicitFacade;
+    @Inject
+    UserBean userBean;
+    private SolicitBubble sb;
+    private HashMap<Integer, Boolean> respMap;
+    private Person person;
+
+    @PostConstruct
+    public void init() {
+        person = userBean.getUser();
+        respMap = new HashMap<>();
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public SolicitBubble getSb() {
+        return sb;
+    }
+
+    public void setSb(SolicitBubble sb) {
+        this.sb = sb;
+    }
+
+    public HashMap<Integer, Boolean> getRespMap() {
+        return respMap;
+    }
+
+    public void setRespMap(HashMap<Integer, Boolean> respMap) {
+        this.respMap = respMap;
+    }
+
+    public void setResponse(SolicitBubble sb) {
+        for (SolicitResponse sr : sb.getSolicitResponses()) {
+            if (sr.getPerson().getEmail().equals(person.getEmail())) {
+                respMap.put(sb.getId(), sr.isAttend());
+                return;
+            }
+        }
+    }
+
+    public void changeAttend() {
+
+        String inputId= null;
+        Iterator req = FacesContext.getCurrentInstance().
+                getExternalContext().getRequestParameterNames();
+        while (req.hasNext()) {
+            String temp = (String) req.next();
+            if (temp.contains("hidden")) {
+                inputId = temp;
+                break;
+            }
+        }
+        String value = FacesContext.getCurrentInstance().
+		getExternalContext().getRequestParameterMap().get(inputId);
+        sb = solicitFacade.find(Integer.parseInt(value));
+        for (SolicitResponse sr : sb.getSolicitResponses()) {
+            if (sr.getPerson().getEmail().equals(person.getEmail())) {
+                boolean resp = respMap.get(sb.getId());
+                sr.setAttend(resp);
+                solicitFacade.edit(sb);
+                return;
+            }
+        }
+        SolicitResponse sr = new SolicitResponse();
+        boolean resp = respMap.get(sb.getId());
+        sr.setAttend(resp);
+        sr.setPerson(person);
+        sb.getSolicitResponses().add(sr);
+        solicitFacade.edit(sb);
+
+    }
+}

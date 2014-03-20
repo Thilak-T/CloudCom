@@ -1,0 +1,35 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package com.ejca.bb;
+
+import com.ejca.entity.Comment;
+import com.ejca.entity.Discussion;
+import java.util.List;
+import javax.inject.Named;
+import javax.enterprise.context.Dependent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+
+/**
+ *
+ * @author mido
+ */
+@Named(value = "viewDiscussion")
+@ViewScoped
+public class ViewDiscussionBB {
+
+     
+    @Inject UserBean userBean;
+    private List<Comment> baseComments;
+    private Discussion discussion;
+    
+    
+    
+    public ViewDiscussionBB() {
+    }
+    
+}

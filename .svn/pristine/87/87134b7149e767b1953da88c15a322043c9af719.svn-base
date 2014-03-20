@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <h:form>    
+            <p:growl id="growl" showDetail="true"/>  
+            <h3>Custom Actions</h3>  
+                <p:panel header="F.C. Barcelona">  
+                    Select Date: <p:calendar id="solicitDate" value="#{solicit.meetingDate}" /><br/>
+                    Enter Info abt Meeting: <p:inputTextarea id="solicitInfo" value="#{solicit.meetingInfo}"/> <br/>
+                <f:facet name="actions">  
+                    <h:commandLink styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default">  
+                        <h:outputText styleClass="ui-icon ui-icon-help" />  
+                    </h:commandLink>  
+                    <h:commandLink styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default">  
+                        <h:outputText styleClass="ui-icon ui-icon-star" />  
+                    </h:commandLink>  
+                </f:facet>  <br/>
+                <h:commandButton id="createSolicit" action="#{solicit.createSolicitBubble()}"
+                                     value="Create Solicit"/>
+            </p:panel>
+        </h:form>  
+    </h:body>
+</html>
+

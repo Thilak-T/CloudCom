@@ -1,0 +1,99 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.entity.Discussion;
+import com.ejca.entity.Person;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
+import org.primefaces.model.DualListModel;
+
+/**
+ *
+ * @author mido
+ */
+@RequestScoped
+@Named("createDiscussion")
+@DeclareRoles({"USERS"})
+@RolesAllowed("USERS")
+public class CreateDiscussionBB implements Serializable {
+
+    private Discussion discussion;
+    private Person creator;
+    private DualListModel<Person> participants;
+
+    @EJB
+    private com.ejca.ejb.DiscussionFacade ejbDiscussion;
+    @EJB
+    private com.ejca.ejb.PersonFacade ejbPerson;
+
+    @PostConstruct
+    public void init() {
+        try {
+
+
+            List<Person> source = new ArrayList<Person>();
+            List<Person> target = new ArrayList<Person>();
+            source = ejbPerson.findAll();
+            source.remove(creator);
+            participants = new DualListModel<Person>(source, target);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        discussion = new Discussion();
+    }
+
+    public String createNewDiscussion() {
+        try {
+            creator = ejbPerson.find(1);  // CHANGE
+            discussion.setCreatorId(creator);
+            discussion.setCreatedTime(new Date());
+            ejbDiscussion.create(discussion);
+            
+            
+            //discussion.setParticipants(participants.getTarget());
+            //ejbDiscussion.edit(discussion);;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "/page/homepage";
+    }
+
+    public Discussion getDiscussion() {
+        return discussion;
+    }
+
+    public void setDiscussion(Discussion discussion) {
+        this.discussion = discussion;
+    }
+
+    public Person getCreator() {
+        return creator;
+    }
+
+    public void setCreator(Person creator) {
+        this.creator = creator;
+    }
+
+    public DualListModel<Person> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(DualListModel<Person> participants) {
+        this.participants = participants;
+    }
+
+}

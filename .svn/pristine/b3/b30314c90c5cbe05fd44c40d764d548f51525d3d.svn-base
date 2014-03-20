@@ -1,0 +1,49 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package com.ejca.ejb;
+
+import com.ejca.entity.Comment;
+import com.ejca.entity.Discussion;
+import java.util.List;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+
+/**
+ *
+ * @author mido
+ */
+@Stateless
+public class CommentFacade extends AbstractFacade<Comment> {
+    @PersistenceContext(unitName = "CloudComPU")
+    private EntityManager em;
+    private static final String getCommentQuery = "select c from Comment c where (parentDiscussion = :discussionId) and (parentComment is NULL) order by c.createdTime desc";
+    
+    @Override
+    protected EntityManager getEntityManager() {
+        return em;
+    }
+
+    public CommentFacade() {
+        super(Comment.class);
+    }
+    
+    public List<Comment> getDiscussions(Discussion discussion){
+        TypedQuery<Comment> query = em.createQuery(getCommentQuery, Comment.class);
+        query.setParameter("discussionId", discussion);
+        List<Comment> comments = query.getResultList();
+        return comments;
+    }
+    
+    public void addComment(Comment comment){
+        create(comment);
+       Discussion discussion = comment.getParentDiscussion();
+       discussion.setLastPost(comment);
+       discussion.setLastUpdatedTime(comment.getCreatedTime());
+    }
+}

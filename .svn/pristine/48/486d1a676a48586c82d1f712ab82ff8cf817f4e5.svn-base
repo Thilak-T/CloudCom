@@ -1,0 +1,86 @@
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.CommentFacade;
+import com.ejca.ejb.DiscussionFacade;
+import com.ejca.entity.Comment;
+import com.ejca.entity.Discussion;
+import java.io.Serializable;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.faces.context.FacesContext;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+
+/**
+ *
+ * @author mido
+ */
+@Named(value = "vb")
+@ViewScoped
+public class VBTemp implements Serializable {
+
+    @Inject
+    UserBean userBean;
+    @EJB
+    DiscussionFacade ejbDiscussion;
+    @EJB
+    CommentFacade ejbComment;
+    private List<Comment> baseComments;
+    private Discussion discussion;
+    private String dissID;
+    private boolean access;
+
+    public VBTemp() {
+
+    }
+    
+    
+    @PostConstruct 
+    public void init2(){
+        System.out.println("map"+FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("discussionID"));
+            discussion = ejbDiscussion.find(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("discussionID"));
+            baseComments=ejbComment.getBaseComments(discussion);
+            System.out.println("comm="+baseComments);
+    }
+
+    public List<Comment> getBaseComments() {
+        return baseComments;
+    }
+
+    public void setBaseComments(List<Comment> baseComments) {
+        this.baseComments = baseComments;
+    }
+
+    public Discussion getDiscussion() {
+        return discussion;
+    }
+
+    public void setDiscussion(Discussion discussion) {
+        this.discussion = discussion;
+    }
+
+    public String getDissID() {
+        return dissID;
+    }
+
+    public void setDissID(String dissID) {
+        this.dissID = dissID;
+    }
+
+    public boolean isAccess() {
+        return access;
+    }
+
+    public void setAccess(boolean access) {
+        this.access = access;
+    }
+
+}

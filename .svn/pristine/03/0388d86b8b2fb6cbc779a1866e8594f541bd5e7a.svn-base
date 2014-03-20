@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:view contentType="text/html">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <title>CloudComm</title>
+            </f:facet>
+        </h:head>
+
+        <h:body>
+            <h:form id="form">
+
+                <p:layout fullPage="true">
+
+                    <p:layoutUnit position="north" size="100" resizable="true" closable="false" collapsible="true">
+                        <p:graphicImage value="/resources/img/CloudComm.png" />  
+                    </p:layoutUnit>
+
+                    <p:layoutUnit position="south" size="100" closable="false" collapsible="true">
+                        An   ISS  Product.
+                    </p:layoutUnit>
+
+                    <p:layoutUnit position="west" size="175" header="Left" collapsible="true">
+                        <p:menu>
+                            <p:menuitem value="Start New Conversation" url="http://forum.primefaces.org/" />
+                            <p:menuitem value="Edit Details" url="http://forum.primefaces.org/" />
+                        </p:menu>
+                    </p:layoutUnit>
+
+                    <p:layoutUnit position="center">
+
+                        <table>
+                            <tr>
+                                <td>
+                                    <h1>#{thread.title}</h1>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td> Description : <p>#{thread.desc}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td >  <p:fieldset id="container" legend="Comments" toggleable="true">  
+                                <ui:repeat var="comm" value="#{thread.comments}"  id="commentsSection">
+                                    <p:fieldset  legend="#{comm.creator.name}" toggleable="true">  
+                                        #{comm.content.message}<br/><br/><br/>
+                                        <table cellpadding="1">
+                                            <tr><td>Posted By: #{comm.creator.name}</td></tr>
+                                            <tr><td>role:#{comm.creator.role}</td><td></td></tr>
+                                            <tr><td>profile:#{comm.creator.profile}</td><td></td></tr>
+                                        </table>
+                                    </p:fieldset> 
+                                </ui:repeat>
+                            </p:fieldset>  </td>
+                            </tr>	
+                            <tr>
+                                <td>
+
+                                    New Comment: <h:inputText value="#{thread.textField}" /> 
+                            <p:commandButton update="container" value="Reply"  actionListener="#{thread.addCommentPush()}"/>
+
+                            </td>
+                            </tr>
+                        </table>
+                    </p:layoutUnit>
+
+                </p:layout>
+
+            </h:form>
+        </h:body>
+
+        <p:socket channel="/chat" onMessage="handleMessage" />
+    </f:view>
+</html>
+

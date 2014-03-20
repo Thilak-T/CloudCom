@@ -1,0 +1,46 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package x.com.ejca.components;
+
+/**
+ *
+ * @author mido
+ */
+import com.ejca.ejb.CloudComManager;
+import java.io.Serializable;  
+import javax.ejb.EJB;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
+  
+import org.primefaces.push.PushContext;  
+import org.primefaces.push.PushContextFactory;  
+  
+@Named
+@RequestScoped
+public class GlobalCounterBean implements Serializable{  
+  @EJB CloudComManager mgr;
+    private int count;  
+  
+    public int getCount() {  
+        return count;  
+    }  
+  
+    public void setCount(int count) {  
+        this.count = count;  
+    }  
+      
+    public synchronized void increment() {  
+        count++;  
+          
+        PushContext pushContext = PushContextFactory.getDefault().getPushContext();  
+        pushContext.push("/counter", String.valueOf(count));  
+    }  
+    
+    public String test() {
+        mgr.createSurvey();
+        return "index";
+    }
+} 

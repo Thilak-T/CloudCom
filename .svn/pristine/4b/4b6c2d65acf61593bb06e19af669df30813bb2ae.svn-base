@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="value" required="true" type="com.ejca.entity.MapBubble"/>
+        <cc:attribute name="type" required="true" type="java.lang.String"/>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <h:panelGroup id="create" rendered="#{cc.attrs.type == 'create'}">
+            Address:<h:inputText value="#{cc.attrs.value.address}" /><br/>
+            Message:<h:inputText value="#{cc.attrs.value.description}" /><br/>
+<!--            <h:commandButton id="cbtn" value="Create"  action="{createBubble.action}" >
+                                <f:ajax render="@form" execute="@form"/>
+            </h:commandButton>-->
+        </h:panelGroup>
+
+        <h:panelGroup id="view" rendered="#{cc.attrs.type == 'view'}">
+            <h:inputHidden id="hidden" value="#{cc.attrs.value.id}"/>
+<!--            Address: <h:outputLabel value="#{cc.attrs.value.address}" />-->
+            Address: <h:inputText id="message" value="#{cc.attrs.value.address}" readonly="#{ not commentbb.editMap[cc.attrs.value.id]}"/>
+            <h:panelGroup id="editButton">
+            <h:commandButton value="Edit" actionListener="#{commentbb.editMapBubble}" rendered="#{commentbb.editMap[cc.attrs.value.id]}">
+                <f:ajax execute="@form" render="view"/><br/>
+            </h:commandButton>
+            </h:panelGroup>
+            <br/><br/>
+            Message: <h:outputLabel value="#{cc.attrs.value.description}"/>
+            <br/><br/>
+            <f:view contentType="text/html" id="thismap" >  
+                <p:gmap center="#{map.mapCoord[cc.attrs.value.id]}" zoom="15" type="ROADMAP" style="width:300px;height:150px"
+                        rendered="true"/>  
+            </f:view>
+        </h:panelGroup>
+    </cc:implementation>
+</html>

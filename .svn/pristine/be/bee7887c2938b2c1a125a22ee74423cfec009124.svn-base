@@ -1,0 +1,73 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.entity.MapBubble;
+import com.ejca.entity.Person;
+import com.ejca.util.GeocodingUtil;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+import org.xml.sax.SAXException;
+
+/**
+ *
+ * @author Rucha Kulkarni
+ */
+@SessionScoped
+@Named("map")
+public class MapBubbleBB implements Serializable {
+
+    private Person person;
+    private HashMap<Integer, String> mapCoord;
+    @Inject
+    Commentbb commBB;
+
+    @PostConstruct
+    public void init() {
+        mapCoord = new HashMap<>();
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public HashMap<Integer, String> getMapCoord() {
+        return mapCoord;
+    }
+
+    public void setMapCoord(HashMap<Integer, String> mapCoord) {
+        this.mapCoord = mapCoord;
+    }
+
+    public void setAddress(MapBubble mb) {
+        updateCoord(mb.getId(), mb.getAddress());
+    }
+
+    public void updateCoord(Integer id, String address) {
+        if (!("".equals(address))) {
+            try {
+                GeocodingUtil geocodingUtil = new GeocodingUtil();
+                String coords = geocodingUtil.getCoordinates(address);
+                mapCoord.put(id, coords);
+
+            } catch (IOException | XPathExpressionException | ParserConfigurationException | SAXException ex) {
+                Logger.getLogger(MapBubbleBB.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+}

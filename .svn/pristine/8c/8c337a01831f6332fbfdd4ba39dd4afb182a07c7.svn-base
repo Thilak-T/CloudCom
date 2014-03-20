@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    
+    <h:head>
+        <title>Login Form</title>
+    </h:head>
+        <h:body>
+        <h2>Hello, please log in:</h2>
+        <form method="post" action="j_security_check">
+            <table columns="2" role="presentation"> 
+                <tr>
+                    <td>Username:</td>
+                    <td><input type="text" name="j_username" 
+                                     size="20" /></td>
+                </tr>
+                <tr>
+                    <td>Password:</td>
+                    <td><input type="password" name="j_password" 
+                                       size="20"/></td>
+                </tr>
+            </table>
+            <p>
+                <input type="submit" value="Submit"/>
+            </p>
+        </form>
+        
+        
+        <h2>New User, Register Here:</h2>
+        <h:form>
+            <table columns="2" role="presentation"> 
+                <tr>
+                    <td>Name:</td>
+                    <td><p:inputText id="name" value="#{loginBean.name}" /></td>
+                </tr>
+                <tr>
+                    <td>Username:</td>
+                    <td><p:inputText id="username" value="#{loginBean.username}" /></td>
+                </tr>
+                <tr>
+                    <td>Password:</td>
+                    <td><p:password value="#{loginBean.password1}" feedback="false" required="true" id="pwd1" /></td>
+                </tr>
+                <tr>
+                    <td>Confirm Password:</td>
+                    <td><p:password value="#{loginBean.password2}" feedback="true" required="true" match="pwd1" /></td>
+                </tr>
+            </table>
+            <p>
+                <p:commandButton value="Register" />
+                
+                <p:commandButton value="Cancel" />
+            </p>
+        </h:form>
+        
+    </h:body>
+</html>

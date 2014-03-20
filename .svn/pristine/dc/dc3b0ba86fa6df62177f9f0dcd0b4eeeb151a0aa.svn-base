@@ -1,0 +1,224 @@
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.CommentFacade;
+import com.ejca.ejb.DiscussionFacade;
+import com.ejca.ejb.PersonFacade;
+import com.ejca.entity.Comment;
+import com.ejca.entity.Discussion;
+import com.ejca.entity.Person;
+import com.ejca.entity.SurveyBubble;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.ManagedBean;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
+import javax.faces.bean.ManagedProperty;
+import javax.faces.context.FacesContext;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import org.primefaces.model.DualListModel;
+
+/**
+ *
+ * @author mido
+ */
+@Named("vb")
+@ViewScoped
+public class VBTemp implements Serializable {
+
+    @Inject
+    CreateBubble createBubble;
+    @Inject
+    UserBean userBean;
+    @EJB
+    DiscussionFacade ejbDiscussion;
+    @EJB
+    PersonFacade ejbPerson;
+    @EJB
+    CommentFacade ejbComment;
+    private List<Comment> baseComments;
+    private Discussion discussion;
+    private String dissID;
+    private boolean access;
+    private DualListModel<Person> participantsDLM;
+    private String modeSelected;
+    private Comment selectedComment;
+    private boolean renderCreateComment;
+    private boolean renderEditComment;
+//
+//    @ManagedProperty(value="#{sbean}")
+//	private Sbean sBean;
+    @Inject private Sbean sBean;
+    @Inject private Commentbb commbb;
+    
+    public DualListModel<Person> getParticipantsDLM() {
+        if (participantsDLM == null) {
+            try {
+//            creator = ejbPerson.find("snow@got.com");  // CHANGE
+                List<Person> source = new ArrayList<Person>();
+                List<Person> target = new ArrayList<Person>();
+                target.addAll(discussion.getParticipants());
+                source = ejbPerson.findAll();
+                source.remove(userBean.getUser());
+                source.remove(discussion.getCreatorId());
+                target.remove(userBean.getUser());
+                target.remove(discussion.getCreatorId());
+                source.removeAll(target);
+                participantsDLM = new DualListModel<Person>(source, target);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return participantsDLM;
+    }
+
+    public void editParticipants() {
+
+        List<Person> target = participantsDLM.getTarget();
+        target.add(userBean.getUser());
+        if (!target.contains(discussion.getCreatorId())) {
+            target.add(discussion.getCreatorId());
+        }
+//            discussion=ejbDiscussion.find(discussion.getId());
+//            discussion.setParticipants(target);
+//            System.out.println("diss="+discussion+",participants="+discussion.getParticipants());
+//            ejbDiscussion.create(discussion);
+            List<Person> pl = new ArrayList<Person>();
+            for (Object s : target) {
+                String s1=s.toString();
+        System.out.println("target="+s1);
+                pl.add(ejbPerson.find(s1));
+            }
+            System.out.println("pl"+pl);
+        ejbDiscussion.updateDiscussion(discussion, pl);
+
+    }
+
+    @PostConstruct
+    public void init2() {
+        System.out.println("map" + FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("discussionID"));
+        discussion = ejbDiscussion.find(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("discussionID"));
+        baseComments = ejbComment.getBaseComments(discussion);
+        for ( Comment c : baseComments ) {
+            if ( c.getCommentType() == (short)1 )
+                sBean.addSurveyBubble((SurveyBubble) c.getBubble());
+            commbb.setFlag(c.getBubble().getId());
+        }
+        System.out.println("comm=" + baseComments);
+        renderCreateComment=false;
+        renderEditComment=false;
+        participantsDLM = null;
+
+    }
+    
+    public void showComment(){
+        if(renderCreateComment)
+            renderCreateComment=false;
+        else
+            renderCreateComment=true;
+    }
+
+    public List<Comment> getBaseComments() {
+        return baseComments;
+    }
+
+    public void setBaseComments(List<Comment> baseComments) {
+        this.baseComments = baseComments;
+    }
+
+    public Discussion getDiscussion() {
+        return discussion;
+    }
+
+    public void setDiscussion(Discussion discussion) {
+        this.discussion = discussion;
+    }
+
+    public String getDissID() {
+        return dissID;
+    }
+
+    public void setDissID(String dissID) {
+        this.dissID = dissID;
+    }
+
+    public boolean isAccess() {
+        return access;
+    }
+
+    public void setAccess(boolean access) {
+        this.access = access;
+    }
+
+    public String getModeSelected() {
+        return modeSelected;
+    }
+
+    public void setModeSelected(String modeSelected) {
+        this.modeSelected = modeSelected;
+    }
+
+    public Comment getSelectedComment() {
+        return selectedComment;
+    }
+
+    public void setSelectedComment(Comment selectedComment) {
+        this.selectedComment = selectedComment;
+    }
+
+
+
+    public boolean isRenderCreateComment() {
+        return renderCreateComment;
+    }
+
+    public void setRenderCreateComment(boolean renderCreateComment) {
+        this.renderCreateComment = renderCreateComment;
+    }
+
+    public boolean isRenderEditComment() {
+        return renderEditComment;
+    }
+
+    public void setRenderEditComment(boolean renderEditComment) {
+        this.renderEditComment = renderEditComment;
+    }
+
+    public void setParticipantsDLM(DualListModel<Person> participantsDLM) {
+        this.participantsDLM = participantsDLM;
+    }
+
+    public VBTemp() {
+
+    }
+    
+    public void createTC(){
+    createBubble.setSelection("text");
+    renderCreateComment=true;
+    }    
+    public void createSurvey(){
+    createBubble.setSelection("survey");
+    renderCreateComment=true;
+    }    
+    public void createSolicit(){
+    createBubble.setSelection("solicit");
+    renderCreateComment=true;
+    }    
+    public void createMap(){
+    createBubble.setSelection("map");
+    renderCreateComment=true;
+    }    
+    public void createMedia(){
+    createBubble.setSelection("info");
+    renderCreateComment=true;
+    }
+}

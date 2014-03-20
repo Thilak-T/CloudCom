@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:cc="http://java.sun.com/jsf/composite/ezcomp"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <f:metadata>
+        <f:viewParam name="discussionID" value="#{vb.dissID}"/>
+    </f:metadata>
+    <ui:composition template="/template.xhtml">
+        <ui:define name="body">
+
+            <p:panel header="#{vb.discussion.title}" id="HeadPlace">  
+                Description: <p>#{vb.discussion.description}</p>
+                <br/>
+                <br/>
+                <h:form id="dropForm">
+                    <h:inputHidden id="hiddenCommentID" value="root" />
+                    <p:commandButton id="dyn1" value="Reply" type="button" style="text-align: right "/>  
+                    <p:menu overlay="true" trigger="dyn1" my="left top" at="left bottom" >  
+                        <p:submenu label="Comment Type:" >  
+                            <p:menuitem value="Text" icon="ui-icon-comment" update=":CreateForm"  actionListener="#{vb.createTC}" />
+                            <p:menuitem value="Survey" icon="ui-icon-search" update=":CreateForm"  actionListener="#{vb.createSurvey}" />
+                            <p:menuitem value="Solicit" icon="ui-icon-calendar" update=":CreateForm"  actionListener="#{vb.createSolicit}" />
+                            <p:menuitem value="Map" icon="ui-icon-image" update=":CreateForm"  actionListener="#{vb.createMap}" />
+                            <p:menuitem value="Media" icon="ui-icon-play" update=":CreateForm"  actionListener="#{vb.createMedia}" />
+                        </p:submenu>  
+                    </p:menu>
+                </h:form>  
+            </p:panel>    <br/><br/><br/>
+
+            <!--                   
+                    <a  href="{request.contextPath}" title="Home Page"  style="position: fixed; bottom:95px;right:200px;background:url('{request.contextPath}/resources/img/home.png') no-repeat center left;">Go to Home</a>
+                    <a  href="#" title="Click to go to top"  style="position: fixed; bottom:95px;right:30px;background:url('{request.contextPath}/resources/img/top2.png') no-repeat center left;">Go to Top</a>-->
+
+
+            <h:form id="CreateForm">
+                <p:panel id="createComm" header="Reply:" style=" top:100px;right:80px;position: fixed;" closable="true" rendered="#{vb.renderCreateComment}">
+                    <!--                <h:form id="FloatingForm">
+                                        <p:commandButton actionListener="{vb.showComment}" update=":CreateForm"  value="Create Comment"/>
+                                    </h:form>-->
+                    Editable:        <p:selectBooleanCheckbox value="#{createBubble.comment.editable}"/>  <br/>
+                    <c:choose>
+                        <c:when test="#{createBubble.comment.commentType == 0}">
+                            <cc:TextBubble  value="#{createBubble.comment.bubble}" type="create" />
+                        </c:when>
+                        <c:when test="#{createBubble.comment.commentType == 1}">
+                            <cc:SurveyBubble value="#{createBubble.comment.bubble}" type="create"  />
+                        </c:when>
+                        <c:when test="#{createBubble.comment.commentType == 2}">
+                            <cc:SolicitBubble value="#{createBubble.comment.bubble}" type="create" />
+                        </c:when>
+                        <c:when test="#{createBubble.comment.commentType == 3}">
+                            <cc:MapBubble value="#{createBubble.comment.bubble}" type="create" />
+                        </c:when>
+                        <c:when test="#{createBubble.comment.commentType == 4}">
+                            <cc:InfoBubble value="#{createBubble.comment.bubble}" type="create" />
+                        </c:when>
+                    </c:choose>
+                    <c:choose>
+                        <c:when test="#{createBubble.comment.commentType == 4}">
+                        </c:when>
+                        <c:otherwise >
+                            <p:commandButton id="iasf" value="Submit"  actionListener="#{vb.actionL}"  update="@form :Replies"/>
+                        </c:otherwise>
+                    </c:choose>
+
+                </p:panel>
+            </h:form>
+
+            <h:form id="ParticipantForm" >
+                <p:panel header="Participants">
+                    <ui:repeat value="#{vb.discussion.participants}" var="participant">
+
+                        <f:facet name="header">
+                            Participants
+                        </f:facet>
+
+                        <h:link value="#{participant.name}" outcome="/page/userprofile"> 
+                            <f:param name="id" value="#{participant.email}" />
+                        </h:link>,
+                    </ui:repeat>
+                    <p:commandButton id="PartBtn"  type="button" value="Edit Participants" disabled="#{vb.discussion.creatorId ne userBean.user}"/>
+                    <p:spacer width="15"/>
+                    <p:commandButton id="iasf2" value="Leave Discussion"  action="#{vb.randomFunction()}" />
+                </p:panel>
+
+                <p:overlayPanel id="PartPanel" for="PartBtn" hideEffect="fade" dynamic="true">  
+                    <p:pickList id="participantsPickList" value="#{vb.participantsDLM}" var="person" effect="bounce"  
+                                itemValue="#{person}" itemLabel="#{person.name}"  addLabel="Add"  
+                                showSourceControls="true" showTargetControls="true" showCheckbox="true"  
+                                showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" >  
+
+                        <f:facet name="sourceCaption">Available</f:facet>  
+                        <f:facet name="targetCaption">Participants</f:facet>  
+
+
+
+
+
+                        <p:column>  
+                            #{person.name}  
+                        </p:column>  
+
+                    </p:pickList> 
+                    <p:commandButton actionListener="#{vb.editParticipants()}" value="Update" update="@form"/>
+                </p:overlayPanel>  
+            </h:form>
+            <br/><br/><br/>
+
+
+
+
+
+            <p:panel id="Replies" header="Replies">
+                <ui:include src="node.xhtml">
+                    <ui:param name="node" value="#{vb.root}" />
+                </ui:include>
+            </p:panel>
+
+
+
+
+
+        </ui:define>
+    </ui:composition>
+
+</html>

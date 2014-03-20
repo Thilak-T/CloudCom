@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:b="http://java.sun.com/jsf/composite/ezcomp"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+                        <cc:attribute name="discussion" type="com.ejca.entity.Discussion"/>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <c:set value="#{cc.attrs.discussion}" target="#{createBubble}" property="discussion" />
+       xyz= #{createBubble.discussion.title}
+        <h:selectOneMenu id="ff" value="#{createBubble.selection}" >
+                       <f:selectItem itemValue="text" itemLabel="Text Bubble"/>
+                       <f:selectItem itemValue="survey" itemLabel="Survey Bubble"/>
+                       <f:selectItem itemValue="solicit" itemLabel="Solicit Bubble"/>
+                       <f:ajax render="@form" listener="#{createBubble.bubbleSelected}"/>
+                   </h:selectOneMenu>
+                   <br/>
+            <b:Comment value="#{createBubble.comment}" type="create"/>
+    </cc:implementation>
+</html>

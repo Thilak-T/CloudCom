@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="value" required="true" type="com.ejca.entity.SurveyBubble"/>
+        <cc:attribute name="type" required="true" type="java.lang.String"/>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <h:panelGroup id="create" rendered="#{cc.attrs.type == 'create'}">
+            Question:<h:inputText value="#{cc.attrs.value.question}"/><br/>
+            Choice<ul>
+                <c:forEach var="i" items="#{createBubble.choices}">
+                    <li>
+                        <h:inputText value="#{i.choice}">
+                        </h:inputText>
+                    </li>
+                </c:forEach>
+            </ul>
+            <h:commandLink value="More" actionListener="#{createBubble.incrementSurveyOptions}">
+                <f:ajax render="@form" execute="@form"/>
+            </h:commandLink><br/>
+            <!--            <h:commandButton id="cbtn" value="Create Survey" action="{createBubble.action}">
+                        </h:commandButton>-->
+        </h:panelGroup>
+        <p:panelGrid  rendered="#{cc.attrs.type == 'view'}">
+            <p:row id="viewBubbleRow">
+                <p:column  id="#{cc.id}" colspan="2">
+                    <h:inputHidden id="hidden" value="#{cc.attrs.value.id}"/>
+                    <p:outputLabel value="Question:#{cc.attrs.value.question}" rendered="#{ not commentbb.editMap[cc.attrs.value.id]}"/>
+                    <p:inputText id="message" value="#{cc.attrs.value.question}" rendered="#{ commentbb.editMap[cc.attrs.value.id]}"/>
+                    <h:panelGroup id="editButton">
+                        <h:commandButton value="Edit" actionListener="#{commentbb.editSurveyBubble}" rendered="#{commentbb.editMap[cc.attrs.value.id]}">
+                            <f:ajax execute="@form" render="message editButton"/><br/>
+                        </h:commandButton>
+                    </h:panelGroup>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <p:selectOneRadio value="#{sbean.respView[cc.attrs.value.id]}"  layout="grid" columns="1">
+                        <f:selectItems value="#{cc.attrs.value.surveyOptionsCollection}" var="o"
+                                       itemLabel="#{o.choice}" itemValue="#{o.id}" />
+                    </p:selectOneRadio>
+
+                </p:column>
+                <p:column>
+                    <p:pieChart value="#{sbean.pieViewMap[cc.attrs.value.id]}" legendPosition="w"  
+                                style="width: 300px;height:200px" />
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <h:commandButton value="Submit" action="#{sbean.updateChoice()}">
+                        <f:ajax render="@form" execute="@form"/>
+                    </h:commandButton>
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+    </cc:implementation>
+</html>

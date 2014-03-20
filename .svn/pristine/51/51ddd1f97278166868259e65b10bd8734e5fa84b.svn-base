@@ -1,0 +1,70 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package x.com.ejca.components;
+
+import com.ejca.bb.HomepageBB;
+import com.ejca.util.AppConfig;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
+
+/**
+ *
+ * @author mido
+ */
+public class VideoTest {
+        
+    
+    
+     public void handle(FileUploadEvent event) {
+        FileWriter fstream = null;
+        try {
+            System.out.println("file Start");
+            uploadedFile = event.getFile();
+
+
+            InputStream is = event.getFile().getInputstream();
+            OutputStream out = new FileOutputStream(new File(constants.getMEDIALoc()+ uploadedFile.getFileName()));
+            byte buf[] = new byte[1024];
+            int len;
+            while ((len = is.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            is.close();
+            out.close();
+
+            FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } catch (IOException ex) {
+            Logger.getLogger(HomepageBB.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {        }
+    }
+    
+    
+     @Inject AppConfig   constants;
+    private UploadedFile uploadedFile;
+    
+    public UploadedFile getUploadedFile() {
+        return uploadedFile;
+    }
+
+    public void setUploadedFile(UploadedFile uploadedFile) {
+        this.uploadedFile = uploadedFile;
+    }
+
+    
+}

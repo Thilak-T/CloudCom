@@ -1,0 +1,78 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.components;
+
+import com.ejca.entity.SurveyBubble;
+import com.ejca.entity.SurveyOptions;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
+import org.primefaces.model.chart.PieChartModel;
+
+/**
+ *
+ * @author Thilak
+ */
+@Named
+@RequestScoped
+public class SBBean implements Serializable {
+    private String selc;
+    private SurveyBubble sb;
+    private PieChartModel pieModel = new PieChartModel();
+    
+    
+    public SBBean() {
+        sb = new SurveyBubble();
+        SurveyOptions s = new SurveyOptions();
+        s.setChoice("hello");
+        s.setSelectedCount(10);
+        SurveyOptions t = new SurveyOptions();
+        t.setChoice("hello");
+        t.setSelectedCount(10);
+        sb.setQuestion("WHAT");
+        List<SurveyOptions> f = new ArrayList<>();
+        f.add(t);
+        f.add(s);
+        sb.setSurveyOptionsCollection(f);
+    }
+    
+    public String getSelc() {
+        return selc;
+    }
+
+    public void setSelc(String selc) {
+        this.selc = selc;
+    }
+
+    public SurveyBubble getSb() {
+        return sb;
+    }
+
+    public void setSb(SurveyBubble sb) {
+        this.sb = sb;
+    }
+
+    public PieChartModel getPieModel() {
+        return pieModel;
+    }
+
+    public void setPieModel(PieChartModel pieModel) {
+        this.pieModel = pieModel;
+    }
+    
+    public List<String> allChoices() {
+        List<String> tl = new ArrayList<>();
+        for(SurveyOptions t : sb.getSurveyOptionsCollection()) {
+            tl.add(t.getChoice());
+        }
+        return tl;
+    }
+    
+    public String updateChoice() {
+        return null;
+    }
+}

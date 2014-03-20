@@ -1,0 +1,127 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.entity.Person;
+import javax.annotation.ManagedBean;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+import org.primefaces.event.CloseEvent;
+import org.primefaces.event.ToggleEvent;
+import org.primefaces.event.map.PointSelectEvent;
+import org.primefaces.event.map.StateChangeEvent;
+import org.primefaces.model.map.LatLng;
+import org.primefaces.model.map.LatLngBounds;
+import org.primefaces.model.map.MapModel;
+import org.primefaces.model.map.Marker;
+
+/**
+ *
+ * @author Rucha Kulkarni
+ */
+
+@ViewScoped
+@ManagedBean
+@Named("map")
+public class MapBubbleBB {
+    
+    private Person person;
+    private double latitude =0.0;
+    private double longitude =0.0;
+    private String coords;
+    private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCoords() {
+        return coords;
+    }
+
+    public void setCoords(String coords) {
+        this.coords = coords;
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+    
+    public void handleClose(CloseEvent event) {  
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Panel Closed", "Closed Map Bubble id:'" + event.getComponent().getId() + "'");  
+          
+        addMessage(message);  
+    }  
+      
+    public void handleToggle(ToggleEvent event) {  
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, event.getComponent().getId() + " toggled", "Status:" + event.getVisibility().name());  
+          
+        addMessage(message);  
+    }  
+    
+    public void strCoordinates (){
+        if(latitude!=0.0 && longitude!=0.0) {
+        coords = latitude + " ," + longitude;
+        
+        }
+    }
+    
+//    public boolean gotCoordinates() {
+//        if(coords!=null) {
+//        if(coords.contains(",")){
+//            return true;
+//        }
+//            return false;
+//        }else 
+//            return false;
+//    }
+    
+     public void onStateChange(StateChangeEvent event) {  
+        LatLngBounds bounds = event.getBounds();  
+        int zoomLevel = event.getZoomLevel();  
+          
+        addMessage(new FacesMessage(FacesMessage.SEVERITY_INFO, "Zoom Level", String.valueOf(zoomLevel)));  
+        addMessage(new FacesMessage(FacesMessage.SEVERITY_INFO, "Center", event.getCenter().toString()));  
+        addMessage(new FacesMessage(FacesMessage.SEVERITY_INFO, "NorthEast", bounds.getNorthEast().toString()));  
+        addMessage(new FacesMessage(FacesMessage.SEVERITY_INFO, "SouthWest", bounds.getSouthWest().toString()));  
+    }  
+      
+    public void onPointSelect(PointSelectEvent event) {  
+        LatLng latlng = event.getLatLng();  
+          
+        addMessage(new FacesMessage(FacesMessage.SEVERITY_INFO, "Point Selected", "Lat:" + latlng.getLat() + ", Lng:" + latlng.getLng()));  
+    }  
+      
+    public void addMessage(FacesMessage message) {  
+        FacesContext.getCurrentInstance().addMessage(null, message);  
+    }
+ 
+}

@@ -1,0 +1,78 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.CommentFacade;
+import com.ejca.ejb.DiscussionFacade;
+import com.ejca.entity.Comment;
+import com.ejca.entity.Discussion;
+import com.ejca.entity.SurveyBubble;
+import java.io.Serializable;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
+
+/**
+ *
+ * @author Thilak
+ */
+@ManagedBean
+@ViewScoped
+public class ViewDiscussionbb implements Serializable {
+    @EJB DiscussionFacade disFac;
+    private Discussion dis;
+    private TreeNode root = new DefaultTreeNode("Root", null);
+    @EJB CommentFacade commFac;
+    @ManagedProperty(value="#{sbean}")
+	private Sbean sBean;
+    
+    @PostConstruct
+    public void init() {
+        dis = disFac.find("1");
+        for ( Comment top : commFac.getBaseComments(dis) ) {
+            if ( top.getCommentType() == 1) 
+                sBean.addSurveyBubble((SurveyBubble) top.getBubble());
+             buildTree(top, root) ;
+        }
+    }
+    
+    public void buildTree( Comment c, TreeNode n ) {
+        TreeNode temp = new DefaultTreeNode(c, n);
+        temp.setExpanded(true);
+        for ( Comment child : c.getCommentCollection() ) {
+            if ( child.getCommentType() == 1) 
+                sBean.addSurveyBubble((SurveyBubble) child.getBubble());
+            buildTree(child, temp);
+        }
+    }
+    
+    public void setsBean(Sbean sBean) {
+        this.sBean = sBean;
+    }
+
+    public Discussion getDis() {
+        return dis;
+    }
+
+    public void setDis(Discussion dis) {
+        this.dis = dis;
+    }
+
+    public TreeNode getRoot() {
+        return root;
+    }
+
+    public void setRoot(TreeNode root) {
+        this.root = root;
+    }
+    
+    
+}

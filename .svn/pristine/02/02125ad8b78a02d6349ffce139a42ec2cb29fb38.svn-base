@@ -1,0 +1,86 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.CloudComManager;
+import com.ejca.ejb.SolicitBubbleFacade;
+import com.ejca.entity.Comment;
+import com.ejca.entity.Person;
+import com.ejca.entity.SolicitBubble;
+import com.ejca.entity.SolicitResponse;
+import java.io.Serializable;
+
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
+
+/**
+ *
+ * @author Nithya
+ */
+@SessionScoped
+@Named("solicit")
+public class SolicitBubbleBB  implements Serializable {
+
+    @EJB CloudComManager cloudComManager;
+    @EJB SolicitBubbleFacade ejbSolicitBubble;
+    private SolicitBubble solicitBubble;
+
+    @PostConstruct
+    public void init(){
+        System.out.println("test Solicit");
+        solicitBubble=new SolicitBubble();
+        solicitBubble.setMeetingInfo("askjdb aksdb ");
+    }
+    
+
+
+    public String createSolicitBubble() {
+        
+        System.out.println("Inside the Create Solicit Bubble bb");
+        ejbSolicitBubble.create(solicitBubble);
+        Comment comment = new Comment();
+        comment.setBubble(solicitBubble);
+        Person p1 = new Person(1, "Pulka Roti", "Admin");
+        Person p2 = new Person(12, "Pulka Roti", "Admin");
+        Person p3 = new Person(123, "Pulka Roti", "Admin");
+        Person p4 = new Person(1234, "Pulka Roti", "Admin");
+        List<SolicitResponse> srList = new ArrayList();
+        SolicitResponse sr = new SolicitResponse();
+        sr.setAttend(false);
+        sr.setPerson(p1);
+        SolicitResponse sr1 = new SolicitResponse();
+        sr1.setAttend(false);
+        sr1.setPerson(p2);
+        SolicitResponse sr2 = new SolicitResponse();
+        sr2.setAttend(false);
+        sr2.setPerson(p3);
+        SolicitResponse sr3 = new SolicitResponse();
+        sr3.setAttend(false);
+        sr3.setPerson(p4);
+        srList.add(sr);
+        srList.add(sr1);srList.add(sr2);srList.add(sr3);
+        solicitBubble.setSolicitResponses(srList);
+        
+        //this.comment = cloudComManager.createSolicit(comment);
+        cloudComManager.createSolicit(comment);
+        return "/page/homepage.xhtml";
+    }
+    
+    
+    public SolicitBubble getSolicitBubble() {
+        return solicitBubble;
+    }
+
+    public void setSolicitBubble(SolicitBubble solicitBubble) {
+        this.solicitBubble = solicitBubble;
+    }
+        
+}

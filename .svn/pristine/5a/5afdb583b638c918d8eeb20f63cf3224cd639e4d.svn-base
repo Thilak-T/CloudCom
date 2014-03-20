@@ -1,0 +1,140 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.entity;
+
+import java.io.Serializable;
+import java.util.Collection;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+/**
+ *
+ * @author Thilak
+ */
+@Entity
+@Table(name = "SURVEY_OPTIONS")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "SurveyOptions.findAll", query = "SELECT s FROM SurveyOptions s"),
+    @NamedQuery(name = "SurveyOptions.findById", query = "SELECT s FROM SurveyOptions s WHERE s.id = :id"),
+    @NamedQuery(name = "SurveyOptions.findByChoice", query = "SELECT s FROM SurveyOptions s WHERE s.choice = :choice"),
+    @NamedQuery(name = "SurveyOptions.findBySelectedCount", query = "SELECT s FROM SurveyOptions s WHERE s.selectedCount = :selectedCount")})
+public class SurveyOptions implements Serializable {
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "ID")
+    private Integer id;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 100)
+    @Column(name = "CHOICE")
+    private String choice;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "SELECTED_COUNT")
+    private int selectedCount;
+//    @JoinColumn(name = "SURVEY_BUBBLE_ID", referencedColumnName = "COMMENT_ID")
+//    @ManyToOne(optional = false)
+//    private SurveyBubble surveyBubbleId;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "selectedOption")
+//    private Collection<SurveyResponse> surveyResponseCollection;
+
+    public SurveyOptions() {
+    }
+
+    public SurveyOptions(Integer id) {
+        this.id = id;
+    }
+
+    public SurveyOptions(Integer id, String choice, int selectedCount) {
+        this.id = id;
+        this.choice = choice;
+        this.selectedCount = selectedCount;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getChoice() {
+        return choice;
+    }
+
+    public void setChoice(String choice) {
+        this.choice = choice;
+    }
+
+    public int getSelectedCount() {
+        return selectedCount;
+    }
+
+    public void setSelectedCount(int selectedCount) {
+        this.selectedCount = selectedCount;
+    }
+
+//    public SurveyBubble getSurveyBubbleId() {
+//        return surveyBubbleId;
+//    }
+//
+//    public void setSurveyBubbleId(SurveyBubble surveyBubbleId) {
+//        this.surveyBubbleId = surveyBubbleId;
+//    }
+//
+//    @XmlTransient
+//    public Collection<SurveyResponse> getSurveyResponseCollection() {
+//        return surveyResponseCollection;
+//    }
+//
+//    public void setSurveyResponseCollection(Collection<SurveyResponse> surveyResponseCollection) {
+//        this.surveyResponseCollection = surveyResponseCollection;
+//    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof SurveyOptions)) {
+            return false;
+        }
+        SurveyOptions other = (SurveyOptions) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "com.ejca.entities.SurveyOptions[ id=" + id + " ]";
+    }
+    
+}

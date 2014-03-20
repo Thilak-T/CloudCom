@@ -1,0 +1,118 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.MapBubbleFacade;
+import com.ejca.ejb.SolicitBubbleFacade;
+import com.ejca.ejb.SurveyBubbleFacade;
+import com.ejca.ejb.TextBubbleFacade;
+import com.ejca.entity.Comment;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+/**
+ *
+ * @author Thilak
+ */
+@Named
+@ViewScoped
+@RolesAllowed("USERS")
+public class Commentbb implements Serializable {
+    Map<Integer, Boolean> editMap = new HashMap<>();
+    @EJB TextBubbleFacade txtFac;
+    @EJB SurveyBubbleFacade surFac;
+    @EJB SolicitBubbleFacade solFac;
+    @EJB MapBubbleFacade mapFac;
+    @Inject MapBubbleBB mapBB;
+
+    public Map<Integer, Boolean> getEditMap() {
+        return editMap;
+    }
+
+    public void setEditMap(Map<Integer, Boolean> editMap) {
+        this.editMap = editMap;
+    }
+    
+    public void setFlag(int i) {
+        editMap.put(i, Boolean.FALSE);
+    }
+    public void edit( ActionEvent e) {
+        int id = getBubbleId();
+        editMap.put(id, Boolean.TRUE);
+    }
+    
+    public void editTextBubble( ActionEvent e ) {
+       int id = getBubbleId();
+       txtFac.updateMessage(id, getBubbleMessage());
+       editMap.put(id, Boolean.FALSE);
+    }
+    
+    public void editSurveyBubble( ActionEvent e ) {
+       int id = getBubbleId();
+       surFac.updateMessage(id, getBubbleMessage());
+       editMap.put(id, Boolean.FALSE);
+    }
+    
+    public void editSolicitBubble(ActionEvent e) {
+        int id = getBubbleId();
+        solFac.updateMessage(id, getBubbleMessage());
+        editMap.put(id, Boolean.FALSE);
+    }
+    
+    public void editMapBubble(ActionEvent e) {
+        int id = getBubbleId();
+        mapBB.updateCoord(id, getBubbleMessage());
+        mapFac.updateAddress(id, getBubbleMessage());
+        editMap.put(id, Boolean.FALSE);
+    }
+    
+    public void reply(Comment c) {
+        System.out.println("RRRRRRRRRRRREEEEEEEE" + c.toString());
+        c.setCreateFormRender(true);
+    }
+    
+    public int getBubbleId() {
+        Iterator req = FacesContext.getCurrentInstance().
+		getExternalContext().getRequestParameterNames();
+        String inputTextId = null;
+        while ( req.hasNext() ) {
+            String temp = (String)req.next();
+            if ( temp.contains("hidden")) {
+                inputTextId = temp;
+                break;
+            }     
+        }
+        String value = FacesContext.getCurrentInstance().
+		getExternalContext().getRequestParameterMap().get(inputTextId);
+        System.out.println("IIIIIIIISSSSSSSS" + value);
+        Integer bid = Integer.parseInt(value);
+        return bid;
+    }
+    
+    public String getBubbleMessage() {
+         Iterator req = FacesContext.getCurrentInstance().
+		getExternalContext().getRequestParameterNames();
+        String inputTextId = null;
+        while ( req.hasNext() ) {
+            String temp = (String)req.next();
+            if ( temp.contains("message")) {
+                inputTextId = temp;
+                break;
+            }     
+        }
+        String value = FacesContext.getCurrentInstance().
+		getExternalContext().getRequestParameterMap().get(inputTextId);
+        return value;
+    }
+}

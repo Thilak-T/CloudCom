@@ -1,0 +1,114 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.entity;
+
+import java.io.Serializable;
+import java.util.Collection;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+/**
+ *
+ * @author Thilak
+ */
+@Entity
+//@DiscriminatorValue("S")
+@Table(name = "SURVEY_BUBBLE")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "SurveyBubble.findAll", query = "SELECT s FROM SurveyBubble s"),
+    @NamedQuery(name = "SurveyBubble.findById", query = "SELECT s FROM SurveyBubble s WHERE s.id = :id"),
+    @NamedQuery(name = "SurveyBubble.findByQuestion", query = "SELECT s FROM SurveyBubble s WHERE s.question = :question")})
+public class SurveyBubble extends Bubble implements Serializable  {
+    private static final long serialVersionUID = 1L;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 100)
+    @Column(name = "QUESTION")
+    private String question;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name="SURVEY_ID", referencedColumnName="ID")
+    private Collection<SurveyOptions> surveyOptionsCollection;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name="SURVEY_ID", referencedColumnName="ID")
+    private Collection<SurveyResponse> surveyResponseCollection;
+
+    public SurveyBubble() {
+    }
+
+    public SurveyBubble(Integer i) {
+        this.id = i;
+    }
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
+    @XmlTransient
+    public Collection<SurveyOptions> getSurveyOptionsCollection() {
+        return surveyOptionsCollection;
+    }
+
+    public void setSurveyOptionsCollection(Collection<SurveyOptions> surveyOptionsCollection) {
+        this.surveyOptionsCollection = surveyOptionsCollection;
+    }
+
+    @XmlTransient
+    public Collection<SurveyResponse> getSurveyResponseCollection() {
+        return surveyResponseCollection;
+    }
+
+    public void setSurveyResponseCollection(Collection<SurveyResponse> surveyResponseCollection) {
+        this.surveyResponseCollection = surveyResponseCollection;
+    }
+    
+    public void addSurveyResponse( SurveyResponse res ) {
+        this.surveyResponseCollection.add(res);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+//        hash += (this.comment.getId() != null ? this.comment.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+//        if (!(object instanceof SurveyBubble)) {
+//            return false;
+//        }
+//        SurveyBubble other = (SurveyBubble) object;
+//        if ((this.comment.getId() == null && other.comment.getId() != null) || (this.comment.getId() != null && !this.comment.getId().equals(other.comment.getId()))) {
+//            return false;
+//        }
+        return true;
+    }
+
+//    @Override
+//    public String toString() {
+//        return "com.ejca.entities.SurveyBubble[ commentId=" + this.comment.getId() + " ]";
+//    }
+    
+}

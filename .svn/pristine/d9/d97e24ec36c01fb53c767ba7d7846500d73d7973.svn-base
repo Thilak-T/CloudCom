@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <ui:composition template="/template.xhtml">
+        <ui:define name="body">
+            <h:form enctype="multipart/form-data">
+            <p:panel header="View Profile">
+                <p:messages showDetail="true"/>  
+                 
+               
+                    <p:fileUpload fileUploadListener="#{profile.handleFileUpload}" mode="advanced" dragDropSupport="false"  
+                                  update="messages,profileImg" fileLimit="3" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" />  
+                <p:growl id="messages" showDetail="true"/>  
+                  
+               <h:panelGrid columns="2" cellpadding="10">  
+                   <p:graphicImage id="profileImg" value="#{profile.profilePic}" height="150px" width="300px"/> 
+                   
+                   <p:inputTextarea rows="6" cols="100" value="#{profile.person.description}" /> 
+            
+               <h:outputLabel value="Name: "/>
+               <p:inputText value="#{profile.person.name}"/>
+               <h:outputLabel value="Email: "/>
+               <p:outputLabel value="#{profile.person.email}"/>
+               <h:commandButton value="Save" action="#{profile.save()}"/>
+               </h:panelGrid>  
+             </p:panel>
+        </h:form>
+        </ui:define>
+     </ui:composition>
+</html>

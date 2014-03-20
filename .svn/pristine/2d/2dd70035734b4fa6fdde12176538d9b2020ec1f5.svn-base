@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditCommentTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.EditCommentLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{commentController.selected.id}" title="#{bundle.EditCommentTitle_id}" required="true" requiredMessage="#{bundle.EditCommentRequiredMessage_id}"/>
+                    <h:outputLabel value="#{bundle.EditCommentLabel_editable}" for="editable" />
+                    <h:inputText id="editable" value="#{commentController.selected.editable}" title="#{bundle.EditCommentTitle_editable}" required="true" requiredMessage="#{bundle.EditCommentRequiredMessage_editable}"/>
+                    <h:outputLabel value="#{bundle.EditCommentLabel_commentCreator}" for="commentCreator" />
+                    <h:selectOneMenu id="commentCreator" value="#{commentController.selected.commentCreator}" title="#{bundle.EditCommentTitle_commentCreator}" required="true" requiredMessage="#{bundle.EditCommentRequiredMessage_commentCreator}">
+                        <f:selectItems value="#{personController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{bundle.EditCommentLabel_lastEditor}" for="lastEditor" />
+                    <h:selectOneMenu id="lastEditor" value="#{commentController.selected.lastEditor}" title="#{bundle.EditCommentTitle_lastEditor}" >
+                        <f:selectItems value="#{personController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{bundle.EditCommentLabel_createdTime}" for="createdTime" />
+                    <h:inputText id="createdTime" value="#{commentController.selected.createdTime}" title="#{bundle.EditCommentTitle_createdTime}" required="true" requiredMessage="#{bundle.EditCommentRequiredMessage_createdTime}">
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:inputText>
+                    <h:outputLabel value="#{bundle.EditCommentLabel_lastEditedTime}" for="lastEditedTime" />
+                    <h:inputText id="lastEditedTime" value="#{commentController.selected.lastEditedTime}" title="#{bundle.EditCommentTitle_lastEditedTime}" required="true" requiredMessage="#{bundle.EditCommentRequiredMessage_lastEditedTime}">
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:inputText>
+                    <h:outputLabel value="#{bundle.EditCommentLabel_commentType}" for="commentType" />
+                    <h:inputText id="commentType" value="#{commentController.selected.commentType}" title="#{bundle.EditCommentTitle_commentType}" required="true" requiredMessage="#{bundle.EditCommentRequiredMessage_commentType}"/>
+                    <h:outputLabel value="#{bundle.EditCommentLabel_bubble}" for="bubble" />
+                    <h:selectOneMenu id="bubble" value="#{commentController.selected.bubble}" title="#{bundle.EditCommentTitle_bubble}" >
+                        <f:selectItems value="#{bubbleController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{commentController.update}" value="#{bundle.EditCommentSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{bundle.EditCommentViewLink}"/>
+                <br />
+                <h:commandLink action="#{commentController.prepareList}" value="#{bundle.EditCommentShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.EditCommentIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

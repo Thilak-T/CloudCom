@@ -1,0 +1,101 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package com.ejca.ejb;
+
+import com.ejca.entity.Comment;
+import com.ejca.entity.Discussion;
+import com.ejca.entity.InfoBubble;
+import com.ejca.entity.MapBubble;
+import com.ejca.entity.SolicitBubble;
+import com.ejca.entity.SurveyBubble;
+import com.ejca.entity.TextBubble;
+import java.util.Date;
+import java.util.List;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+
+/**
+ *
+ * @author mido
+ */
+@Stateless
+public class CommentFacade extends AbstractFacade<Comment> {
+    @PersistenceContext(unitName = "CloudComPU")
+    private EntityManager em;
+    private static final String getCommentQuery = "select c from Comment c where (c.parentDiscussion = :discussionId) and (c.parentComment is NULL) order by c.createdTime desc";
+    private static final String getCommNameAndDate = "select c from Comment c where (c.parentDiscussion = :discussionId) and (c.commentCreator.name like :name) and (c.createdTime < :date) order by c.createdTime desc";
+    private static final String getCommNameOrDate = "select c from Comment c where (c.parentDiscussion = :discussionId) and ((c.commentCreator.name like :name) or (c.createdTime < :date)) order by c.createdTime desc";
+    private static final String getCommName = "select c from Comment c where (c.parentDiscussion = :discussionId) and (c.commentCreator.name like :name) order by c.createdTime desc";
+    private static final String getCommDate = "select c from Comment c where (c.parentDiscussion = :discussionId) and (c.createdTime < :date) order by c.createdTime desc";
+    private static final String getSubComments = "select c from Comment c where c.parentComment.id = :commentId";
+    
+    @Override
+    protected EntityManager getEntityManager() {
+        return em;
+    }
+
+    public CommentFacade() {
+        super(Comment.class);
+    }
+    
+    public List<Comment> getBaseComments(Discussion discussion){
+        TypedQuery<Comment> query = em.createQuery(getCommentQuery, Comment.class);
+        query.setParameter("discussionId", discussion);
+        List<Comment> comments = query.getResultList();
+        return comments;
+    }
+    
+    public void addComment(Comment comment){
+        create(comment);
+       Discussion discussion = comment.getParentDiscussion();
+       discussion.setLastPost(comment);
+       discussion.setLastUpdatedTime(comment.getCreatedTime());
+    }
+    
+    public List<Comment> filterComments(Discussion d, String name, Date date, int type){
+        TypedQuery<Comment> query = null;
+        switch (type) {
+            case 1:
+                query = em.createQuery(getCommNameAndDate, Comment.class);
+                query.setParameter("discussionId", d);
+                query.setParameter("name", "%" + name + "%");
+                query.setParameter("date", date);
+                break;
+                
+            case 2:
+                query = em.createQuery(getCommNameOrDate, Comment.class);
+                query.setParameter("discussionId", d);
+                query.setParameter("name", "%" + name + "%");
+                query.setParameter("date", date);
+                break;
+                
+            case 3:
+                query = em.createQuery(getCommName, Comment.class);
+                query.setParameter("discussionId", d);
+                query.setParameter("name", "%" + name + "%");
+                break;
+                
+            case 4:
+                query = em.createQuery(getCommDate, Comment.class);
+                query.setParameter("discussionId", d);
+                query.setParameter("date", date);
+                break;
+        }
+        List<Comment> comments = query.getResultList();
+        return comments;
+    }
+    
+    public List<Comment> findSubComments(Comment c) {
+        List<Comment> subComm = null;
+        TypedQuery<Comment> query = em.createQuery(getSubComments, Comment.class);
+        query.setParameter("commentId", c.getId());
+        subComm = query.getResultList();
+        return subComm;
+    }
+}

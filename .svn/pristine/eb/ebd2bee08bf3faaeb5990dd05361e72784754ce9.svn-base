@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditSolicitResponseTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.EditSolicitResponseLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{solicitResponseController.selected.id}" title="#{bundle.EditSolicitResponseTitle_id}" required="true" requiredMessage="#{bundle.EditSolicitResponseRequiredMessage_id}"/>
+                    <h:outputLabel value="#{bundle.EditSolicitResponseLabel_person}" for="person" />
+                    <h:selectOneMenu id="person" value="#{solicitResponseController.selected.person}" title="#{bundle.EditSolicitResponseTitle_person}" required="true" requiredMessage="#{bundle.EditSolicitResponseRequiredMessage_person}">
+                        <f:selectItems value="#{personController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{solicitResponseController.update}" value="#{bundle.EditSolicitResponseSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{bundle.EditSolicitResponseViewLink}"/>
+                <br />
+                <h:commandLink action="#{solicitResponseController.prepareList}" value="#{bundle.EditSolicitResponseShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.EditSolicitResponseIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

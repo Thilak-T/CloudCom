@@ -1,0 +1,24 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.entity.Comment;
+import java.io.Serializable;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+
+/**
+ *
+ * @author Thilak
+ */
+@Named
+@ViewScoped
+public class Commentbb implements Serializable {
+    
+    public void reply(Comment c) {
+        System.out.println("RRRRRRRRRRRREEEEEEEE" + c.toString());
+        c.setCreateFormRender(true);
+    }
+}

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListSurveyResponseTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{bundle.ListSurveyResponseEmpty}" rendered="#{surveyResponseController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{surveyResponseController.items.rowCount > 0}">
+                    <h:outputText value="#{surveyResponseController.pagination.pageFirstItem + 1}..#{surveyResponseController.pagination.pageLastItem + 1}/#{surveyResponseController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{surveyResponseController.previous}" value="#{bundle.Previous} #{surveyResponseController.pagination.pageSize}" rendered="#{surveyResponseController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{surveyResponseController.next}" value="#{bundle.Next} #{surveyResponseController.pagination.pageSize}" rendered="#{surveyResponseController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{surveyResponseController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListSurveyResponseTitle_id}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListSurveyResponseTitle_selectedOption}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.selectedOption}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListSurveyResponseTitle_person}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.person}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{surveyResponseController.prepareView}" value="#{bundle.ListSurveyResponseViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{surveyResponseController.prepareEdit}" value="#{bundle.ListSurveyResponseEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{surveyResponseController.destroy}" value="#{bundle.ListSurveyResponseDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{surveyResponseController.prepareCreate}" value="#{bundle.ListSurveyResponseCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ListSurveyResponseIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

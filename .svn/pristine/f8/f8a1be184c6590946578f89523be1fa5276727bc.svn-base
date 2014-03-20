@@ -1,0 +1,178 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.PersonFacade;
+import com.ejca.ejb.SolicitBubbleFacade;
+import com.ejca.entity.Person;
+import com.ejca.entity.SolicitBubble;
+import com.ejca.entity.SolicitResponse;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.component.html.HtmlInputHidden;
+import javax.faces.component.html.HtmlInputText;
+import javax.inject.Named;
+
+/**
+ *
+ * @author Nithya
+ */
+@SessionScoped
+@Named("solicit")
+public class SolicitBubbleBB implements Serializable {
+
+    @EJB
+    SolicitBubbleFacade solicitFacade;
+    @EJB
+    PersonFacade personFacade;
+    private SolicitBubble sb;
+    private boolean response;
+    private List<SolicitBubble> sbList;
+    //private HashMap<Integer, SolicitBubble> sbMap;
+    private HtmlInputHidden sbId;
+    private HashMap<Integer, Boolean> sbRespMap;
+    private Person person;
+
+    @PostConstruct
+    public void init() {
+        person = personFacade.find("sample@gmail.com");
+        sbList = solicitFacade.findAll();
+        sbRespMap = new HashMap();
+        for (SolicitBubble sbTemp : sbList) {
+            for (SolicitResponse sr : sbTemp.getSolicitResponses()) {
+                if (sr.getPerson().getEmail().equals(person.getEmail())) {
+                    sbRespMap.put(sb.getId(), sr.isAttend());
+                }
+            }
+        }
+//        response = false;
+    }
+
+    public List<SolicitBubble> getSbList() {
+        return sbList;
+    }
+
+    public void setSbList(List<SolicitBubble> sbList) {
+        this.sbList = sbList;
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public SolicitBubble getSb() {
+        return sb;
+    }
+
+    public void setSb(SolicitBubble sb) {
+        this.sb = sb;
+    }
+
+    public boolean isResponse() {
+        return response;
+    }
+
+    public void setResponse(boolean resp) {
+        this.response = resp;
+    }
+
+    public HtmlInputHidden getSbId() {
+        return sbId;
+    }
+
+    public void setSbId(HtmlInputHidden sbId) {
+        this.sbId = sbId;
+    }
+
+//    public HashMap<Integer, SolicitBubble> getSbMap() {
+//        return sbMap;
+//    }
+//
+//    public void setSbMap(HashMap<Integer, SolicitBubble> sbMap) {
+//        this.sbMap = sbMap;
+//    }
+    public HashMap<Integer, Boolean> getSbRespMap() {
+        return sbRespMap;
+    }
+
+    public void setSbRespMap(HashMap<Integer, Boolean> sbRespMap) {
+        this.sbRespMap = sbRespMap;
+    }
+
+    public void addSolicitBubble() {
+        Integer id = Integer.parseInt(sbId.toString());
+        sb = solicitFacade.find(id);
+        for (SolicitResponse sr : sb.getSolicitResponses()) {
+            if (sr.getPerson().getEmail().equals(person.getEmail())) {
+                sbRespMap.put(id, sr.isAttend());
+            }
+        }
+//        sbMap.put(sb.getId(), sb);
+        sbList.add(sb);
+    }
+
+//    public String createSolicitBubble() {
+//
+//        comment = new Comment();
+//        List<Person> pl = personFacade.findAll();
+//        ArrayList<SolicitResponse> sl = new ArrayList<>();
+//        for (Person p : pl) {
+//            SolicitResponse sr = new SolicitResponse();
+//            sr.setPerson(p);
+//            sr.setAttend(false);
+//            sl.add(sr);
+//        }
+//        solicitBubble.setSolicitResponses(sl);
+//        comment.setBubble(solicitBubble);
+//        commentFacade.create(comment);
+//        return "/page/homepage.xhtml";
+//    }
+    public void changeAttend() {
+        Integer id = Integer.parseInt(sbId.toString());
+        SolicitBubble sbTemp = solicitFacade.find(id);
+        if (sbRespMap.containsKey(id)) {
+            for (SolicitResponse sr : sbTemp.getSolicitResponses()) {
+                if (person.getEmail().equals(sr.getPerson().getEmail())) {
+                    sr.setAttend(sbRespMap.get(id));
+                }
+            }
+        } else {
+            SolicitResponse sr = new SolicitResponse();
+            sr.setPerson(person);
+            sr.setAttend(sbRespMap.get(id));
+            sbTemp.getSolicitResponses().add(sr);
+        }
+        solicitFacade.edit(sbTemp);
+        for (SolicitBubble sbNew : sbList) {
+            if (sbNew.getId().equals(sbTemp.getId())) {
+                sbNew = sbTemp;
+                break;
+            }
+        }
+
+
+    }
+//    
+//    public String displaySolicit() {
+//        comment = commentFacade.find(comment.getId());
+//        solicitBubble = (SolicitBubble)comment.getBubble();
+//        for(SolicitResponse sr : solicitBubble.getSolicitResponses()) {
+//            if(sr.getPerson().getEmail().equals(person.getEmail())) {
+//                solicitResponse = sr;
+//                break;
+//            }
+//        }
+//        return("/page/solicitDisplay.xhtml");
+//    }
+}

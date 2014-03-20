@@ -1,0 +1,134 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.components;
+
+import com.ejca.entity.SurveyBubble;
+import com.ejca.entity.SurveyOptions;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.faces.bean.ManagedBean;
+import javax.faces.component.html.HtmlInputText;
+import javax.faces.component.html.HtmlSelectOneRadio;
+import javax.faces.view.ViewScoped;
+import org.primefaces.model.chart.PieChartModel;
+
+/**
+ *
+ * @author Thilak
+ */
+@ManagedBean
+@ViewScoped
+public class Sbean implements Serializable {
+    
+    private String selc;
+    private HtmlInputText in;
+     private List<SurveyBubble> sl = new ArrayList<>();
+    private HtmlSelectOneRadio radio;
+    private Map<Integer,Integer> respView = new HashMap<>();
+    private Map<Integer,PieChartModel> pieViewMap = new HashMap<>();
+    
+    public Sbean() {
+          SurveyBubble sb = new SurveyBubble();
+        SurveyOptions s = new SurveyOptions();
+        s.setId(1);
+        s.setChoice("hello");
+        s.setSelectedCount(10);
+        SurveyOptions t = new SurveyOptions();
+        t.setId(2);
+        t.setChoice("hello123");
+        t.setSelectedCount(20);
+        sb.setQuestion("WHAT");
+        List<SurveyOptions> f = new ArrayList<>();
+        f.add(t);
+        f.add(s);
+        sb.setSurveyOptionsCollection(f);
+        sb.setId(1111);
+        SurveyBubble sb1 = new SurveyBubble();
+        SurveyOptions s1 = new SurveyOptions();
+        s1.setId(99);
+        s1.setChoice("hai");
+        s1.setSelectedCount(10);
+        SurveyOptions t1 = new SurveyOptions();
+        t1.setId(999);
+        t1.setChoice("hai123");
+        t1.setSelectedCount(20);
+        sb1.setQuestion("WHY");
+        List<SurveyOptions> f1 = new ArrayList<>();
+        f1.add(t1);
+        f1.add(s1);
+        sb1.setSurveyOptionsCollection(f1);
+        sb1.setId(2222);
+        sl.add(sb);
+        sl.add(sb1);
+        respView.put(1111, 2);
+        respView.put(2222, 99);
+        PieChartModel temp = new PieChartModel(new HashMap<String,Number>());
+        temp.set(s.getChoice(), s.getSelectedCount());
+        temp.set(t.getChoice(), t.getSelectedCount());
+        pieViewMap.put(sb.getId(), temp);
+        PieChartModel temp1 = new PieChartModel(new HashMap<String,Number>());
+        temp1.set(s.getChoice(), s.getSelectedCount());
+        temp1.set(t.getChoice(), t.getSelectedCount());
+        pieViewMap.put(sb1.getId(), temp1);
+    }
+
+    public Map<Integer, PieChartModel> getPieViewMap() {
+        return pieViewMap;
+    }
+
+    public void setPieViewMap(Map<Integer, PieChartModel> pieViewMap) {
+        this.pieViewMap = pieViewMap;
+    }
+
+    public Map<Integer, Integer> getRespView() {
+        return respView;
+    }
+
+    public void setRespView(Map<Integer, Integer> respView) {
+        this.respView = respView;
+    }
+
+    public HtmlSelectOneRadio getRadio() {
+        return radio;
+    }
+
+    public void setRadio(HtmlSelectOneRadio radio) {
+        this.radio = radio;
+    }
+
+    public List<SurveyBubble> getSl() {
+        return sl;
+    }
+
+    public void setSl(List<SurveyBubble> sl) {
+        this.sl = sl;
+    }
+
+    public HtmlInputText getIn() {
+        return in;
+    }
+
+    public void setIn(HtmlInputText in) {
+        this.in = in;
+    }
+    
+    public String getSelc() {
+        return selc;
+    }
+
+    public void setSelc(String selc) {
+        this.selc = selc;
+    }
+    
+    
+    public String updateChoice() {
+        System.out.println("UUUUUUUUUPPPPPPPP" + radio.getValue());
+        System.out.println(in.getValue());
+        return null;
+    }
+}

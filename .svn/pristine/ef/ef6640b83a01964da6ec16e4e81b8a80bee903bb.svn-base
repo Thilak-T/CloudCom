@@ -1,0 +1,49 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package com.ejca.ejb;
+
+import com.ejca.entity.Discussion;
+import com.ejca.entity.Person;
+import java.util.ArrayList;
+import java.util.List;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+
+/**
+ *
+ * @author mido
+ */
+@Stateless
+public class DiscussionFacade extends AbstractFacade<Discussion> {
+    @PersistenceContext(unitName = "CloudComPU")
+    private EntityManager em;
+    private static final String getDisQuery = "select d from Discussion d join d.participants p where p = :personId order by d.createdTime desc";
+
+    @Override
+    protected EntityManager getEntityManager() {
+        return em;
+    }
+
+    public DiscussionFacade() {
+        super(Discussion.class);
+    }
+    
+    public List<Discussion> findRelated(Person person){
+        List<Discussion> discussions = new ArrayList<Discussion>();
+        return discussions;
+    }
+    
+    public List<Discussion> getDiscussions(Person person){
+        TypedQuery<Discussion> query = em.createQuery(getDisQuery, Discussion.class);
+        query.setParameter("personId", person);
+        List<Discussion> discussions = query.getResultList();
+        return discussions;
+    }
+    
+}

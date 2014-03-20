@@ -1,0 +1,150 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.CommentFacade;
+import com.ejca.ejb.DiscussionFacade;
+import com.ejca.entity.Bubble;
+import com.ejca.entity.Comment;
+import com.ejca.entity.Discussion;
+import com.ejca.entity.MapBubble;
+import com.ejca.entity.SolicitBubble;
+import com.ejca.entity.SurveyBubble;
+import com.ejca.entity.SurveyOptions;
+import com.ejca.entity.TextBubble;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+/**
+ *
+ * @author Thilak
+ */
+@Named
+@ViewScoped
+public class CreateBubble implements Serializable {
+
+    private String selection = "text";
+    private Comment comment = new Comment();
+    private List<SurveyOptions> choices = new ArrayList<>();
+    //private Discussion dis = new Discussion();
+    @EJB
+    CommentFacade comF;
+    @Inject
+    UserBean ub;
+
+    public CreateBubble() {
+        comment.setBubble(new TextBubble());
+        comment.setCommentType((short)0);
+        for (int i = 0; i < 3; i++) {
+            choices.add(new SurveyOptions());
+        }
+    }
+   
+    public List<SurveyOptions> getChoices() {
+        return choices;
+    }
+
+    public void setChoices(List<SurveyOptions> choices) {
+        this.choices = choices;
+    }
+
+    public String getSelection() {
+        return selection;
+    }
+
+    public void setSelection(String selection) {
+        this.selection = selection;
+    }
+
+    public Comment getComment() {
+        return comment;
+    }
+
+    public void setComment(Comment comment) {
+        this.comment = comment;
+    }
+
+    public void incrementSurveyOptions(ActionEvent e) {
+        for (int i = 0; i < 3; i++) {
+            choices.add(new SurveyOptions());
+        }
+    }
+
+    public void bubbleSelected() {
+        System.out.println("HAAAAAAAAAAAAAAAAAI");
+        switch (selection) {
+            case "text":
+                comment.setBubble(new TextBubble());
+                comment.setCommentType((short)0);
+                break;
+            case "survey":
+                comment.setBubble(new SurveyBubble());
+                comment.setCommentType((short)1);
+                break;
+            case "solicit":
+                comment.setBubble(new SolicitBubble());
+                comment.setCommentType((short)2);
+                break;
+            case "map":
+                comment.setBubble(new MapBubble());
+                comment.setCommentType((short)3);
+                break;
+            default:
+                System.out.println("No Bubble selected");
+        }
+//        if (selection.equals("text"))
+//            bubble = new TextBubble();
+//        else
+//            bubble = new SurveyBubble();
+    }
+
+    public String action() {
+        System.out.println("Action");
+        switch (selection) {
+            case "survey":
+                List<SurveyOptions> tempList = new ArrayList<>();
+                System.out.println("Survey Options" + choices.toString());
+                Iterator i = choices.listIterator();
+                while (i.hasNext()) {
+                    SurveyOptions temp = ((SurveyOptions) i.next());
+                    if (temp.getChoice() != null) {
+                        tempList.add(temp);
+                    }
+                }
+                ((SurveyBubble) comment.getBubble()).setSurveyOptionsCollection(tempList);
+                System.out.println("AFFFFFFFFFFF" + tempList.toString());
+                break;
+            case "solicit":
+               // bubble = new SolicitBubble();
+                break;
+            case "map":
+                //bubble = new MapBubble();
+                break;
+            default:
+                System.out.println("No Bubble selected");
+        }
+//
+//
+//
+//        if (selection.equals("survey")) {
+//        }
+
+        
+        comment.setCreatedTime(new Date());
+        comment.setEditable('n');
+        comment.setCommentCreator(ub.getUser());
+        comF.create(comment);
+        return null;
+    }
+}

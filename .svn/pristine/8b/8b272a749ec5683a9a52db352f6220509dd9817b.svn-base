@@ -1,0 +1,101 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.entity.MapBubble;
+import com.ejca.entity.Person;
+import com.ejca.util.GeocodingUtil;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.inject.Named;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+import org.primefaces.event.map.OverlaySelectEvent;
+import org.primefaces.model.map.DefaultMapModel;
+import org.primefaces.model.map.LatLng;
+import org.primefaces.model.map.MapModel;
+import org.primefaces.model.map.Marker;
+import org.xml.sax.SAXException;
+
+/**
+ *
+ * @author Rucha Kulkarni
+ * @author Nithya
+ */
+@ViewScoped
+@Named("map")
+public class MapBubbleBB implements Serializable {
+
+    private Person person;
+    private HashMap<Integer, String> mapCoord;
+    private HashMap<Integer, MapModel> mapMarker;
+
+    @PostConstruct
+    public void init() {
+        mapCoord = new HashMap<>();
+        mapMarker = new HashMap<>();
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public HashMap<Integer, String> getMapCoord() {
+        return mapCoord;
+    }
+
+    public void setMapCoord(HashMap<Integer, String> mapCoord) {
+        this.mapCoord = mapCoord;
+    }
+
+    public HashMap<Integer, MapModel> getMapMarker() {
+        return mapMarker;
+    }
+
+    public void setMapMarker(HashMap<Integer, MapModel> mapMarker) {
+        this.mapMarker = mapMarker;
+    }
+
+    public void setAddress(MapBubble mb) {
+        updateCoord(mb.getId(), mb.getAddress());
+    }
+
+    public void updateCoord(Integer id, String address) {
+        if (address != "") {
+            try {
+                GeocodingUtil geocodingUtil = new GeocodingUtil();
+                String coords = geocodingUtil.getCoordinates(address);
+                mapCoord.put(id, coords);
+                String[] latLong = coords.split(",");
+                LatLng latLng = new LatLng(Double.parseDouble(latLong[0]), Double.parseDouble(latLong[1]));
+                Map<String, String> data = new HashMap<>();
+                data.put("Address", address);
+                Marker marker = new Marker(latLng, "Marker", data);
+                MapModel model = new DefaultMapModel();
+                model.addOverlay(marker);
+                mapMarker.put(id, model);
+
+            } catch (IOException | XPathExpressionException | ParserConfigurationException | SAXException ex) {
+                Logger.getLogger(MapBubbleBB.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    public void onMarkerSelect(OverlaySelectEvent evt) {
+        
+    }
+}

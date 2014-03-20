@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://java.sun.com/jsf/composite/ezcomp"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="value" required="true" type="com.ejca.entity.Comment"/>
+        <cc:attribute name="type" required="true" type="java.lang.String"/>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:panelGrid rendered="#{cc.attrs.type == 'create'}">
+            <p:row>
+                <p:column> <h:graphicImage library="img" name="Merlion-Singapore1.jpg"/> 
+                    <h:outputText  style="alignment-adjust: central" value="#{cc.attrs.value.commentCreator.name}" /> </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                <b:TextBubble  value="#{cc.attrs.value.bubble}" type="#{cc.attrs.type}"  rendered="#{cc.attrs.value.commentType == 0}"/>
+                <b:SurveyBubble  value="#{cc.attrs.value.bubble}" type="#{cc.attrs.type}" rendered="#{cc.attrs.value.commentType == 1}"/>
+                <!--<b:SolicitBubble  value="#{cc.attrs.value.bubble}" type="#{cc.attrs.type}" rendered="#{cc.attrs.value.commentType == 2}"/>--> 
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+        
+        <p:panelGrid rendered="#{cc.attrs.type == 'view'}">
+            <p:row>
+                <p:column> <h:graphicImage library="img" name="Merlion-Singapore1.jpg"/> 
+                    <h:outputText  style="alignment-adjust: central" value="#{cc.attrs.value.commentCreator.name}" /> </p:column>
+                <p:column>
+                    <h:commandLink value="Edit"/><p:spacer width="15"/>
+                    <h:commandLink value="Reply"/><p:spacer width="15"/>
+                    <h:commandLink value="Hide"/><p:spacer width="15"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column colspan="2">
+                <b:TextBubble  value="#{cc.attrs.value.bubble}" type="#{cc.attrs.type}"  rendered="#{cc.attrs.value.commentType == 0}"/>
+                <b:SurveyBubble  value="#{cc.attrs.value.bubble}" type="#{cc.attrs.type}" rendered="#{cc.attrs.value.commentType == 1}"/>
+                <!--<b:SolicitBubble  value="#{cc.attrs.value.bubble}" type="#{cc.attrs.type}" rendered="#{cc.attrs.value.commentType == 2}"/>--> 
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column colspan="2"> <h:outputText value="#{cc.attrs.value.createdTime}"/> </p:column>
+            </p:row>
+        </p:panelGrid>
+        
+    </cc:implementation>
+</html>

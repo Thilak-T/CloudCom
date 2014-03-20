@@ -1,0 +1,66 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package com.ejca.bb;
+import com.ejca.entity.Discussion;
+import com.ejca.entity.Person;
+import java.io.Serializable;
+import javax.annotation.security.RolesAllowed;
+import javax.enterprise.context.ApplicationScoped;
+import javax.faces.application.FacesMessage;
+import javax.inject.Inject;
+import javax.inject.Named;
+import org.primefaces.push.PushContext;
+import org.primefaces.push.PushContextFactory;
+
+@Named("push")
+@ApplicationScoped
+@RolesAllowed("USERS")
+public class PushBB implements Serializable{
+
+    @Inject UserBean userBean;
+     PushContext pushContext;
+            String message="dummy";
+	private int count=0;
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+	
+	public synchronized void increment() {
+		count++;
+        
+        PushContext pushContext = PushContextFactory.getDefault().getPushContext();
+        pushContext.push("/user", String.valueOf(count));
+	}
+        
+        
+	
+	public synchronized void show() {
+            count++;
+            System.out.println("count="+count);
+                    pushContext = PushContextFactory.getDefault().getPushContext();  
+          
+        pushContext.push("/user", new FacesMessage("Title", "Details"));
+	}
+        
+        
+        	
+	public synchronized void showMessage(Discussion discussion) {
+            message=discussion.getLastPost().getCommentCreator().getName() +"    posted a commment at "+discussion.getLastPost().getCreatedTime().toString();
+            pushContext = PushContextFactory.getDefault().getPushContext(); 
+            for(Person p:discussion.getParticipants()){
+                //if(!p.getEmail().equals(discussion.getLastPost().getCommentCreator().getEmail()))     
+                    pushContext.push("/"+p.getEmail(), new FacesMessage(discussion.getTitle(), message));
+            }
+	}
+        
+        
+}

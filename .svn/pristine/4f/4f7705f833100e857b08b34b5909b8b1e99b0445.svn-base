@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:view contentType="text/html">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <title>CloudComm</title>
+            </f:facet>
+        </h:head>
+
+        <h:body>
+            <h:form id="form">
+
+                <p:layout fullPage="true">
+
+                    <p:layoutUnit position="north" size="100" resizable="true" closable="false" collapsible="true">
+                        <p:graphicImage value="/resources/img/CloudComm.png" />  
+                    </p:layoutUnit>
+
+                    <p:layoutUnit position="south" size="100" closable="false" collapsible="true">
+                        An   ISS  Product.
+                    </p:layoutUnit>
+
+
+                    <p:layoutUnit position="center">
+
+                        <p:panel header="user Details">  
+
+                            <h:messages errorClass="error"/>  
+
+                            <h:panelGrid columns="2" columnClasses="label, value" styleClass="grid">  
+                                <h:outputText value="Username: *" />  
+                                <p:inputText required="true" label="Firstname"  
+                                             value="#{user.name}" />  
+
+                                <h:outputText value="Role: *" />  
+                                <p:inputText required="true" label="Lastname"  
+                                             value="#{user.role}" />  
+
+
+                            </h:panelGrid>  
+                        </p:panel> 
+
+
+
+                        <p:commandButton update="container" value="Reply"  actionListener="#{thread.addCommentPush()}"/>
+
+                    </p:layoutUnit>
+
+                </p:layout>
+
+            </h:form>
+        </h:body>
+
+    </f:view>
+</html>

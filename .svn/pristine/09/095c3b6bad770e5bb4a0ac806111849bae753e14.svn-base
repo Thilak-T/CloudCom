@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="body">
+            <h:form id="form"> 
+
+                <p:dataTable var="discussion" value="#{homepage.discussions}"  paginator="true" rows="10"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15,20,25" id="discussionTable" lazy="true"  resizableColumns="true" liveResize="true" >  
+
+                    <p:ajax event="colResize" listener="#{homepage.onResize}" />  
+                    <f:facet name="header">  
+                        Discussions 
+                    </f:facet>  
+                    <p:column headerText="Discussion">  
+                        <h:link value="#{discussion.title}" outcome="/page/viewDiscussion"> 
+                            <f:param name="discussionID" value="#{discussion.id}" />
+                        </h:link>
+                    </p:column>  
+
+                    <p:column headerText="Replies">  
+                        <h:outputText value="#{discussion.replies}" />  
+                    </p:column>  
+
+                    <p:column headerText="Author">  
+                        <h:outputText value="#{discussion.creatorId.name}" />  
+                    </p:column>  
+                    <p:column headerText="Last Post">  
+                        <h:outputText value="#{discussion.lastPost}" />  
+                    </p:column>  
+
+                    <p:column headerText="Create Time">  
+                        <h:outputText value="#{discussion.createdTime}" />  
+                    </p:column>  
+                </p:dataTable>  
+
+
+                <p:growl id="growl" showDetail="true"/>  
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

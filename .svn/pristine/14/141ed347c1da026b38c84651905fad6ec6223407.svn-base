@@ -1,0 +1,107 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.PersonFacade;
+import com.ejca.ejb.SolicitBubbleFacade;
+import com.ejca.entity.Person;
+import com.ejca.entity.SolicitBubble;
+import com.ejca.entity.SolicitResponse;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import javax.annotation.ManagedBean;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+/**
+ *
+ * @author Nithya
+ */
+@ViewScoped
+@Named("solicit")
+public class SolicitBubbleBB implements Serializable {
+
+    @EJB
+    SolicitBubbleFacade solicitFacade;
+    @EJB
+    PersonFacade personFacade;
+    @Inject
+    UserBean userBean;
+    private SolicitBubble sb;
+    private boolean response;
+    private Person person;
+
+    @PostConstruct
+    public void init() {
+        person = userBean.getUser();
+        Iterator req = FacesContext.getCurrentInstance().
+                getExternalContext().getRequestParameterNames();
+        while (req.hasNext()) {
+            String temp = (String) req.next();
+            if (temp.contains("hidden")) {
+                sb.setId(Integer.parseInt(temp));
+                break;
+            }
+        }
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public SolicitBubble getSb() {
+        return sb;
+    }
+
+    public void setSb(SolicitBubble sb) {
+        this.sb = sb;
+    }
+
+    public boolean isResponse() {
+        response = false;
+        sb = solicitFacade.find(sb.getId());
+        for (SolicitResponse sr : sb.getSolicitResponses()) {
+            if (sr.getPerson().getEmail().equals(person.getEmail())) {
+                response = sr.isAttend();
+            }
+        }
+        return response;
+    }
+
+    public void putSb(SolicitBubble sb) {
+        setSb(sb);
+    }
+
+    public void setResponse(boolean resp) {
+        this.response = resp;
+    }
+
+    public void changeAttend() {
+        Integer id = sb.getId();
+        sb = solicitFacade.find(id);
+        for (SolicitResponse sr : sb.getSolicitResponses()) {
+            if (sr.getPerson().getEmail().equals(person.getEmail())) {
+                sr.setAttend(response);
+                solicitFacade.edit(sb);
+                return;
+            }
+        }
+        SolicitResponse sr = new SolicitResponse();
+        sr.setAttend(response);
+        sr.setPerson(person);
+        sb.getSolicitResponses().add(sr);
+        solicitFacade.edit(sb);
+
+    }
+}

@@ -1,0 +1,140 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.PersonFacade;
+import com.ejca.ejb.SurveyBubbleFacade;
+import com.ejca.entity.Bubble;
+import com.ejca.entity.Person;
+import com.ejca.entity.SurveyBubble;
+import com.ejca.entity.SurveyOptions;
+import com.ejca.entity.SurveyResponse;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.component.html.HtmlInputHidden;
+import javax.faces.component.html.HtmlInputText;
+import javax.faces.component.html.HtmlSelectOneRadio;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import org.primefaces.model.chart.PieChartModel;
+
+/**
+ *
+ * @author Thilak
+ */
+@ManagedBean
+@ViewScoped
+public class Sbean implements Serializable {
+    
+    private List<SurveyBubble> sl = new ArrayList<>();
+    private Map<Integer,Object> respView = new HashMap<>();
+    private Map<Integer,PieChartModel> pieViewMap = new HashMap<>();
+    @EJB SurveyBubbleFacade sFacade;
+    @EJB PersonFacade pFacade;
+    @Inject UserBean ub;
+   
+
+    public void addSurveyBubble(SurveyBubble b) {
+        sl.add(b);
+        
+        PieChartModel temp = new PieChartModel(new HashMap<String,Number>());
+            for (SurveyOptions tempS : b.getSurveyOptionsCollection() ) {
+                      temp.set(tempS.getChoice(), tempS.getSelectedCount());
+            }
+            pieViewMap.put(b.getId(), temp);
+            for ( SurveyResponse res : b.getSurveyResponseCollection()) {
+                 if ( res.getPerson().getEmail() == ub.getUser().getEmail() ) {
+                     respView.put(b.getId(), res.getSelectedOption().getId());
+                 }
+            }
+    }
+    
+    public Map<Integer, PieChartModel> getPieViewMap() {
+        return pieViewMap;
+    }
+
+    public void setPieViewMap(Map<Integer, PieChartModel> pieViewMap) {
+        this.pieViewMap = pieViewMap;
+    }
+
+    public Map<Integer, Object> getRespView() {
+        return respView;
+    }
+
+    public void setRespView(Map<Integer, Object> respView) {
+        this.respView = respView;
+    }
+
+    public List<SurveyBubble> getSl() {
+        return sl;
+    }
+
+    public void setSl(List<SurveyBubble> sl) {
+        this.sl = sl;
+    }
+    
+    public String updateChoice() {
+        Iterator req = FacesContext.getCurrentInstance().
+		getExternalContext().getRequestParameterNames();
+        String inputTextId = null;
+        while ( req.hasNext() ) {
+            String temp = (String)req.next();
+            if ( temp.contains("hidden")) {
+                inputTextId = temp;
+                break;
+            }
+                
+        }
+        String value = FacesContext.getCurrentInstance().
+		getExternalContext().getRequestParameterMap().get(inputTextId);
+        System.out.println("IIIIIIII" + value);
+        Integer id = Integer.parseInt(value);
+        Integer oid =  Integer.parseInt((String)respView.get(id));
+        System.out.println("UUUUUUUUUPPPPPPPP" + oid);
+        System.out.println(id);
+        
+        Person p = pFacade.find("thilak");
+        SurveyResponse res = new SurveyResponse();
+        res.setPerson(p);
+        SurveyOptions so = null;
+        SurveyBubble sbu = null;
+        for ( SurveyBubble tempB : sl ) {
+            if ( tempB.getId() == id ) {
+                sbu = tempB;
+            for (SurveyOptions tempS : tempB.getSurveyOptionsCollection() ) {
+                System.out.println("IIIIIIIIIII" + tempS.toString());
+                    if ( tempS.getId() == oid ) {      
+                        so = tempS;
+                        so.setSelectedCount(so.getSelectedCount() + 1);
+                        break;
+                    }
+            }
+            }
+        }
+        res.setSelectedOption(so);
+        List<SurveyResponse> resList =  (List<SurveyResponse>) sbu.getSurveyResponseCollection();
+        resList.add(res);
+        sbu.setSurveyResponseCollection(resList);
+        sFacade.edit(sbu);
+        respView.put(sbu.getId(), so.getId());
+//         PieChartModel temp = new PieChartModel(new HashMap<String,Number>());
+//         temp.set(so.getChoice(), so.getSelectedCount());
+//         pieViewMap.put(sbu.getId(), temp);
+        PieChartModel temp = pieViewMap.get(sbu.getId());
+        temp.set(so.getChoice(), so.getSelectedCount());
+        return null;
+    }
+    
+}

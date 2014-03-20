@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<erd version="1.0">
+    <datasource>
+        <connection value="jdbc:derby://localhost:1527/ejca"/>
+    </datasource>
+    <table tableId="DISCUSSION_PERSON" x="229" y="194"/>
+    <table tableId="DISCUSSION" x="36" y="314"/>
+    <table tableId="COMMENT" x="497" y="182"/>
+    <table tableId="TEXT_BUBBLE" x="505" y="17"/>
+    <table tableId="PERSON" x="114" y="25"/>
+</erd>

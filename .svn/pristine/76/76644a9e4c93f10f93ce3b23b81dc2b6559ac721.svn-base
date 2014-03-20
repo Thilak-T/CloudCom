@@ -1,0 +1,38 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.CommentFacade;
+import com.ejca.ejb.DiscussionFacade;
+import com.ejca.entity.Discussion;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+/**
+ *
+ * @author Thilak
+ */
+@Named
+@ViewScoped
+public class cctestbb {
+    private Discussion dis = new Discussion();
+    @EJB CommentFacade comF;
+    
+    @PostConstruct
+    public void init() {
+        dis.setComment(comF.findAll());
+    }
+
+    public Discussion getDis() {
+        return dis;
+    }
+
+    public void setDis(Discussion dis) {
+        this.dis = dis;
+    }
+}

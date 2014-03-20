@@ -1,0 +1,120 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:view contentType="text/html">
+        <h:head>
+            <f:facet name="first">
+                <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <title>CloudComm</title>
+                <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/img/fav.png" />
+
+
+            </f:facet>
+
+            <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/default.css" />
+            <ui:insert name="title"><title>CloudComm</title>
+            </ui:insert>
+            <script src="http://maps.google.com/maps/api/js?key=AIzaSyDYfZPdDIIXdfd_JvAE9ZOk11n3WyzTPPg&amp;sensor=false" ></script>
+        </h:head>
+
+        <h:body>
+
+
+
+
+            <ui:insert name="push">
+                    <p:growl widgetVar="growl" showDetail="true" />  
+                <h:form id="Rand31">
+<!--                    <h:outputText id="out" value="#{push.count}" />
+
+                    <br />
+
+                    <p:commandButton value="Click" actionListener="{push.show}" />-->
+                </h:form>
+
+                    <p:socket onMessage="handleMessage" channel="/#{userBean.user.email}"  >
+                    <p:ajax update=":Rand31"/>
+                </p:socket>
+        <script type="text/javascript">
+            //<![CDATA[
+                function handleMessage(facesmessage) {   
+                    facesmessage.severity = 'info';
+                    PF('growl').show([facesmessage]);  
+                }
+            //]]> 
+        </script>
+
+            </ui:insert>
+
+
+            <div id="header" class="ui-widget ui-widget-header" >
+                <div id="logo">
+                    <a href="#{request.contextPath}"  > <img src="#{request.contextPath}/resources/img/logo.png" alt="Logo" height="81" width="145"/>  </a>
+
+
+                </div>
+
+                <div id="menu" class="ui-widget" >
+                    <h:form>
+                        <ul id="main">
+
+                            <li ><a href="#{request.contextPath}/faces/page/createDiscussion.xhtml"  style="background:url('#{request.contextPath}/resources/img/diss.png') no-repeat center left;">Create Discussion</a></li>
+                            <li ><a href="#{request.contextPath}/faces/page/userprofile.xhtml"  style="background:url('#{request.contextPath}/resources/img/options.png') no-repeat center left;">Profile</a></li>
+    <!--                        <li><a href="#{request.contextPath}/faces/page/createDiscussion.xhtml"  style="background:url('#{request.contextPath}/resources/img/user.png') no-repeat center left;">Logout</a></li>-->
+                            <li>
+                            <p:commandLink action="#{userBean.logout}" style="background:url('#{request.contextPath}/resources/img/user.png') no-repeat center left;" >  
+                                <h:outputText value="Logout" />  
+                            </p:commandLink>
+                            </li>
+
+                        </ul>
+                    </h:form>
+                </div>
+
+            </div>
+
+
+            <div id="page" class="ui-widget">
+
+
+                <div id="content">
+                    <div class="post">
+                        <ui:insert name="body">...</ui:insert>
+                    </div>
+                </div>
+
+                <div style="clear: both;"></div>
+            </div>
+
+
+            <div id="footer" class="ui-widget ui-widget-header ui-corner-all"  >
+                <p class="copyright">Cloudcomm © 2013</p>
+            </div>
+
+
+
+
+            <ui:insert name="status">
+                <p:ajaxStatus style="width:64px;height:64px;position:fixed;right:5px;bottom:5px">
+                    <f:facet name="start">
+                        <p:graphicImage value="/resources/img/xloading.gif" />
+                    </f:facet>
+
+                    <f:facet name="complete">
+                        <h:outputText value="" />
+                    </f:facet>
+                </p:ajaxStatus>
+            </ui:insert>
+        </h:body>
+
+    </f:view>
+</html>
+

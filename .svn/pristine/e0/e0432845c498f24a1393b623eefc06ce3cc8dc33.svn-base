@@ -1,0 +1,42 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.entity;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+
+/**
+ *
+ * @author Thilak
+ */
+
+@Entity
+@Inheritance(strategy=InheritanceType.JOINED)
+//@DiscriminatorColumn(name="BUBBLE_TYPE")
+@Table(name = "BUBBLE")
+public abstract class Bubble {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Basic(optional = false)
+    @Column(name = "ID")
+    protected Integer id;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+   
+}

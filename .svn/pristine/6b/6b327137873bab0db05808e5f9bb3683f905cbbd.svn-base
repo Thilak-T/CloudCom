@@ -1,0 +1,61 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.CloudComManager;
+import com.ejca.ejb.SolicitBubbleFacade;
+import com.ejca.entity.Comment;
+import com.ejca.entity.Person;
+import com.ejca.entity.SolicitBubble;
+import com.ejca.entity.SolicitResponse;
+import java.io.Serializable;
+
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
+
+/**
+ *
+ * @author Nithya
+ */
+@SessionScoped
+@Named("solicit")
+public class SolicitBubbleBB  implements Serializable {
+
+    @EJB CloudComManager cloudComManager;
+    @EJB SolicitBubbleFacade ejbSolicitBubble;
+    private SolicitBubble solicitBubble;
+
+    @PostConstruct
+    public void init(){
+        System.out.println("test Solicit");
+        solicitBubble=new SolicitBubble();
+        solicitBubble.setMeetingInfo("askjdb aksdb ");
+    }
+    
+
+
+    public String createSolicitBubble() {
+        
+        System.out.println("Inside the Create Solicit Bubble bb");
+        ejbSolicitBubble.create(solicitBubble);
+        return "/page/homepage.xhtml";
+    }
+    
+    
+    public SolicitBubble getSolicitBubble() {
+        return solicitBubble;
+    }
+
+    public void setSolicitBubble(SolicitBubble solicitBubble) {
+        this.solicitBubble = solicitBubble;
+    }
+        
+}

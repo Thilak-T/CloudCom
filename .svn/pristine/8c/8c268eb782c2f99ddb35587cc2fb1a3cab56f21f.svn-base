@@ -1,0 +1,141 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.PersonFacade;
+import com.ejca.ejb.SolicitBubbleFacade;
+import com.ejca.entity.Person;
+import com.ejca.entity.SolicitBubble;
+import com.ejca.entity.SolicitResponse;
+import java.io.Serializable;
+import java.util.HashMap;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
+
+/**
+ *
+ * @author Nithya
+ */
+@SessionScoped
+@Named("solicit")
+public class SolicitBubbleBB implements Serializable {
+
+    @EJB
+    SolicitBubbleFacade solicitFacade;
+    @EJB
+    PersonFacade personFacade;
+    private SolicitBubble sb;
+    private boolean response;
+    private HashMap<Integer, SolicitBubble> sbMap;
+    private HashMap<Integer, Boolean> sbRespMap;
+    private Person person;
+
+    @PostConstruct
+    public void init() {
+        sb = new SolicitBubble();
+        sbMap = new HashMap();
+        sbRespMap = new HashMap();
+        person = new Person();
+        response = false;
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public SolicitBubble getSb() {
+        return sb;
+    }
+
+    public void setSb(SolicitBubble sb) {
+        this.sb = sb;
+    }
+
+    public boolean isResponse() {
+        return response;
+    }
+
+    public void setResponse(boolean resp) {
+        this.response = resp;
+    }
+
+    public HashMap<Integer, SolicitBubble> getSbMap() {
+        return sbMap;
+    }
+
+    public void setSbMap(HashMap<Integer, SolicitBubble> sbMap) {
+        this.sbMap = sbMap;
+    }
+
+    public HashMap<Integer, Boolean> getSbRespMap() {
+        return sbRespMap;
+    }
+
+    public void setSbRespMap(HashMap<Integer, Boolean> sbRespMap) {
+        this.sbRespMap = sbRespMap;
+    }
+
+    public void addSolicitBubble() {
+        sb = solicitFacade.find(sb.getId());
+        for (SolicitResponse sr : sb.getSolicitResponses()) {
+            if (sr.getPerson().getEmail().equals(person.getEmail())) {
+                sbRespMap.put(sb.getId(), sr.isAttend());
+            }
+        }
+        sbMap.put(sb.getId(), sb);
+    }
+
+//    public String createSolicitBubble() {
+//
+//        comment = new Comment();
+//        List<Person> pl = personFacade.findAll();
+//        ArrayList<SolicitResponse> sl = new ArrayList<>();
+//        for (Person p : pl) {
+//            SolicitResponse sr = new SolicitResponse();
+//            sr.setPerson(p);
+//            sr.setAttend(false);
+//            sl.add(sr);
+//        }
+//        solicitBubble.setSolicitResponses(sl);
+//        comment.setBubble(solicitBubble);
+//        commentFacade.create(comment);
+//        return "/page/homepage.xhtml";
+//    }
+    public void changeAttend() {
+        SolicitBubble sbTemp = sbMap.get(sb.getId());
+        if (sbRespMap.containsKey(sb.getId())) {
+            for (SolicitResponse sr : sbTemp.getSolicitResponses()) {
+                if (person.getEmail().equals(sr.getPerson().getEmail())) {
+                    sr.setAttend(sbRespMap.get(sb.getId()));
+                }
+            }
+        } else {
+            SolicitResponse sr = new SolicitResponse();
+            sr.setPerson(person);
+            sr.setAttend(sbRespMap.get(sb.getId()));
+            sbTemp.getSolicitResponses().add(sr);
+        }
+        solicitFacade.edit(sbTemp);
+
+    }
+//    
+//    public String displaySolicit() {
+//        comment = commentFacade.find(comment.getId());
+//        solicitBubble = (SolicitBubble)comment.getBubble();
+//        for(SolicitResponse sr : solicitBubble.getSolicitResponses()) {
+//            if(sr.getPerson().getEmail().equals(person.getEmail())) {
+//                solicitResponse = sr;
+//                break;
+//            }
+//        }
+//        return("/page/solicitDisplay.xhtml");
+//    }
+}

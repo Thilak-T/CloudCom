@@ -1,0 +1,87 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.DiscussionFacade;
+import com.ejca.ejb.PersonFacade;
+import com.ejca.entity.Discussion;
+import com.ejca.entity.Person;
+import java.io.Serializable;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
+import org.primefaces.model.DualListModel;
+import org.primefaces.model.LazyDataModel;
+
+/**
+ *
+ * @author mido
+ */
+@RequestScoped
+@Named("homepage")
+public class HomepageBB implements Serializable {
+
+    @EJB
+    private DiscussionFacade ejbDiscussion;
+    @EJB
+    private PersonFacade ejbPerson;
+    private List<Discussion> discussions;
+    private Person user;
+    private Discussion selectedDiscussion;
+    private LazyDataModel<Discussion> lazyModel;
+
+    public List<Discussion> getDiscussions() {
+        return discussions;
+    }
+
+    public void setDiscussions(List<Discussion> discussions) {
+        this.discussions = discussions;
+    }
+
+    public Person getUser() {
+        return user;
+    }
+
+    public void setUser(Person user) {
+        this.user = user;
+    }
+
+    public Discussion getSelectedDiscussion() {
+        return selectedDiscussion;
+    }
+
+    public void setSelectedDiscussion(Discussion selectedDiscussion) {
+        this.selectedDiscussion = selectedDiscussion;
+    }
+
+    public LazyDataModel<Discussion> getLazyModel() {
+        return lazyModel;
+    }
+
+    public void setLazyModel(LazyDataModel<Discussion> lazyModel) {
+        this.lazyModel = lazyModel;
+    }
+
+    @PostConstruct
+    public void init() {
+        //user = ejbPerson.find(7);
+        //discussions=ejbDiscussion.findAll();
+
+        try {
+           
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public String gotoCreateDiscussion() {
+        return "/page/createDiscussion";
+    }
+
+}

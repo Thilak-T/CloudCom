@@ -1,0 +1,231 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.CommentFacade;
+import com.ejca.ejb.DiscussionFacade;
+import com.ejca.ejb.InfoBubbleFacade;
+import com.ejca.entity.Comment;
+import com.ejca.entity.Discussion;
+import com.ejca.entity.InfoBubble;
+import com.ejca.entity.MapBubble;
+import com.ejca.entity.SolicitBubble;
+import com.ejca.entity.SurveyBubble;
+import com.ejca.entity.SurveyOptions;
+import com.ejca.entity.TextBubble;
+import com.ejca.util.GeocodingUtil;
+import com.ejca.util.AppConfig;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
+import org.xml.sax.SAXException;
+
+/**
+ *
+ * @author Thilak
+ */
+@Named
+@ViewScoped
+@RolesAllowed("USERS")
+public class CreateBubble implements Serializable {
+
+    private String msg;
+    private UploadedFile file;
+    private String selection;
+    private Comment comment;
+    private List<SurveyOptions> choices;
+    private Discussion discussion;
+    @EJB
+    private InfoBubbleFacade ejbInfo;
+    @EJB
+    private DiscussionFacade ejbDiscussion;
+    @EJB
+    CommentFacade comF;
+    @Inject
+    UserBean ub;
+    @Inject
+    PushBB push;
+
+    public CreateBubble() {
+    }
+
+    @PostConstruct
+    public void init() {
+
+        selection = "text";
+        comment = new Comment();
+        comment.setBubble(new TextBubble());
+        comment.setCommentType((short) 0);
+        choices = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            choices.add(new SurveyOptions());
+        }
+    }
+
+    public Discussion getDiscussion() {
+        return discussion;
+    }
+
+    public void setDiscussion(Discussion discussion) {
+        this.discussion = discussion;
+    }
+
+    public List<SurveyOptions> getChoices() {
+        return choices;
+    }
+
+    public void setChoices(List<SurveyOptions> choices) {
+        this.choices = choices;
+    }
+
+    public String getSelection() {
+        return selection;
+    }
+
+    public void setSelection(String selection) {
+        this.selection = selection;
+        bubbleSelected();
+    }
+
+    public Comment getComment() {
+        return comment;
+    }
+
+    public void setComment(Comment comment) {
+        this.comment = comment;
+    }
+
+    public void incrementSurveyOptions(ActionEvent e) {
+            choices.add(new SurveyOptions());
+    }
+
+    public void bubbleSelected() {
+        switch (selection) {
+            case "text":
+                comment.setBubble(new TextBubble());
+                comment.setCommentType((short) 0);
+                break;
+            case "survey":
+                comment.setBubble(new SurveyBubble());
+                comment.setCommentType((short) 1);
+                break;
+            case "solicit":
+                comment.setBubble(new SolicitBubble());
+                comment.setCommentType((short) 2);
+                break;
+            case "map":
+                comment.setBubble(new MapBubble());
+                comment.setCommentType((short) 3);
+                break;
+            case "info":
+                comment.setBubble(new InfoBubble());
+                comment.setCommentType((short) 4);
+                break;
+            default:
+                System.out.println("No Bubble selected");
+        }
+    }
+
+    public void reset() {
+        comment = new Comment();
+        choices.clear();
+        for (int i = 0; i < 3; i++) {
+            choices.add(new SurveyOptions());
+        }
+        bubbleSelected();
+        msg = null;
+    }
+
+    public Comment action() {
+        switch (selection) {
+            case "survey":
+                List<SurveyOptions> tempList = new ArrayList<>();
+                Iterator i = choices.listIterator();
+                while (i.hasNext()) {
+                    SurveyOptions temp = ((SurveyOptions) i.next());
+                    if (temp.getChoice() != null) {
+                        tempList.add(temp);
+                    }
+                }
+                ((SurveyBubble) comment.getBubble()).setSurveyOptionsCollection(tempList);
+                break;
+            case "solicit":
+                break;
+            case "map":
+                break;
+            case "info":
+                break;
+            default:
+                System.out.println("No Bubble selected");
+        }
+
+        comment.setParentDiscussion(discussion);
+        comment.setCreatedTime(new Date());
+        comment.setCommentCreator(ub.getUser());
+        comF.create(comment);
+        callPush();
+        reset();
+        return comment;
+    }
+
+    public void callPush() {
+
+        discussion.setLastPost(comment);
+        ejbDiscussion.edit(discussion);
+        push.showMessage(discussion);
+
+    }
+
+    public void handleFileUpload(FileUploadEvent event) {
+        try {
+            file = event.getFile();
+            String orgName = file.getFileName();
+            String fileName = UUID.randomUUID().toString() + orgName.substring(orgName.lastIndexOf('.'));
+
+            ejbInfo.copyFile(new AppConfig().getMEDIALoc() + fileName, event.getFile().getInputstream());
+
+            ((InfoBubble) comment.getBubble()).setInfo(fileName);
+            comment.setEditable(false);
+        } catch (IOException ex) {
+            Logger.getLogger(CreateBubble.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public UploadedFile getFile() {
+        return file;
+    }
+
+    public void setFile(UploadedFile file) {
+        this.file = file;
+    }
+
+}

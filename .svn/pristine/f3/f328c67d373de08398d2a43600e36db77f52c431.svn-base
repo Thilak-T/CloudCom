@@ -1,0 +1,124 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.CloudComManager;
+import com.ejca.ejb.CommentFacade;
+import com.ejca.ejb.PersonFacade;
+import com.ejca.ejb.SolicitResponseFacade;
+import com.ejca.entity.Comment;
+import com.ejca.entity.Person;
+import com.ejca.entity.SolicitBubble;
+import com.ejca.entity.SolicitResponse;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
+
+/**
+ *
+ * @author Nithya
+ */
+@SessionScoped
+@Named("solicit")
+public class SolicitBubbleBB implements Serializable {
+
+    @EJB
+    CloudComManager cloudComManager;
+    @EJB
+    CommentFacade commentFacade;
+    @EJB
+    PersonFacade personFacade;
+    @EJB
+    SolicitResponseFacade solicitResponseFacade;
+    private Comment comment;
+    private SolicitBubble solicitBubble;
+    private SolicitResponse solicitResponse;
+    private Person person;
+
+    @PostConstruct
+    public void init() {
+        comment = new Comment();
+        solicitBubble = new SolicitBubble();
+        solicitResponse = new SolicitResponse();
+        person = new Person();
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public SolicitBubble getSolicitBubble() {
+
+        return solicitBubble;
+    }
+
+    public void setSolicitBubble(SolicitBubble solicitBubble) {
+        this.solicitBubble = solicitBubble;
+    }
+
+    public SolicitResponse getSolicitResponse() {
+        return solicitResponse;
+    }
+
+    public void setSolicitResponse(SolicitResponse solicitResponse) {
+        this.solicitResponse = solicitResponse;
+    }
+
+    public Comment getComment() {
+        return comment;
+    }
+
+    public void setComment(Comment comment) {
+        this.comment = comment;
+    }
+
+    public String createSolicitBubble() {
+
+        comment = new Comment();
+        List<Person> pl = personFacade.findAll();
+        ArrayList<SolicitResponse> sl = new ArrayList<>();
+        for (Person p : pl) {
+            SolicitResponse sr = new SolicitResponse();
+            sr.setPerson(p);
+            sr.setAttend(false);
+            sl.add(sr);
+        }
+        solicitBubble.setSolicitResponses(sl);
+        comment.setBubble(solicitBubble);
+        commentFacade.create(comment);
+        return "/page/homepage.xhtml";
+    }
+
+    public String changeAttend() {
+        ArrayList<SolicitResponse> srList = solicitBubble.getSolicitResponses();
+        for (SolicitResponse sr : srList) {
+            if (sr.getPerson().equals(solicitResponse.getPerson())) {
+                sr.setAttend(solicitResponse.isAttend());
+            }
+        }
+        commentFacade.edit(comment);
+        return ("/page/solictiDisplay.xhtml");
+    }
+    
+    public String displaySolicit() {
+        comment = commentFacade.find(comment.getId());
+        solicitBubble = (SolicitBubble)comment.getBubble();
+        for(SolicitResponse sr : solicitBubble.getSolicitResponses()) {
+            if(sr.getPerson().getEmail().equals(person.getEmail())) {
+                solicitResponse = sr;
+                break;
+            }
+        }
+        return("/page/solicitDisplay.xhtml");
+    }
+}

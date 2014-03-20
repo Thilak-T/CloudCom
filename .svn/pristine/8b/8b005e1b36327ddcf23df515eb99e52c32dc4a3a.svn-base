@@ -1,0 +1,215 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.entity;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Date;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+
+/**
+ *
+ * @author Thilak
+ */
+@Entity
+@Table(name = "DISCUSSION")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Discussion.findAll", query = "SELECT d FROM Discussion d"),
+    @NamedQuery(name = "Discussion.findById", query = "SELECT d FROM Discussion d WHERE d.id = :id"),
+    @NamedQuery(name = "Discussion.findByTitle", query = "SELECT d FROM Discussion d WHERE d.title = :title"),
+    @NamedQuery(name = "Discussion.findByDescription", query = "SELECT d FROM Discussion d WHERE d.description = :description"),
+    @NamedQuery(name = "Discussion.findByCreatedTime", query = "SELECT d FROM Discussion d WHERE d.createdTime = :createdTime")})
+public class Discussion implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Basic(optional = false)
+    @Column(name = "ID")
+    private String id;
+    
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 30)
+    @Column(name = "TITLE")
+    private String title;
+    
+    @Column(name = "DESCRIPTION")
+    private String description;
+    
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "CREATED_TIME")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdTime;
+    
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "UPDATED_TIME")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastUpdatedTime;
+
+    public Date getLastUpdatedTime() {
+        return lastUpdatedTime;
+    }
+
+    public void setLastUpdatedTime(Date lastUpdatedTime) {
+        this.lastUpdatedTime = lastUpdatedTime;
+    }
+    
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "DISCUSSION_PERSON",
+            joinColumns = {
+                @JoinColumn(name = "DISCUSSION_ID", referencedColumnName = "ID")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "PERSON_ID", referencedColumnName = "EMAIL")})
+    private Collection<Person> participants;
+    
+    @JoinColumn(name = "CREATOR_ID")
+    @OneToOne(optional = false)
+    private Person creatorId;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "parentDiscussion")
+    @JoinColumn(name = "DISCUSSION_ID", referencedColumnName = "ID")
+    @Basic(fetch = FetchType.LAZY)
+    private Collection<Comment> comment;
+    
+    private Integer replyCount;
+    
+    @OneToOne
+    private Comment lastPost;
+    
+
+    public Discussion() {
+    }
+
+    public Integer getReplyCount() {
+        return replyCount;
+    }
+
+    public void setReplyCount(Integer replyCount) {
+        this.replyCount = replyCount;
+    }
+
+    public Comment getLastPost() {
+        return lastPost;
+    }
+
+    public void setLastPost(Comment lastPost) {
+        this.lastPost = lastPost;
+    }
+    public Discussion(String id) {
+        this.id = id;
+    }
+
+    public Discussion(String id, String title, Date createdTime) {
+        this.id = id;
+        this.title = title;
+        this.createdTime = createdTime;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public void setCreatorId(Person creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public Collection<Person> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(Collection<Person> participants) {
+        this.participants = participants;
+    }
+
+    public Collection<Comment> getComment() {
+        return comment;
+    }
+
+    public void setComment(Collection<Comment> comment) {
+        this.comment = comment;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Discussion)) {
+            return false;
+        }
+        Discussion other = (Discussion) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+    public Person getCreatorId() {
+        return creatorId;
+    }
+
+    @Override
+    public String toString() {
+        return "com.ejca.entities.Discussion[ id=" + id + " ]";
+    }
+
+}

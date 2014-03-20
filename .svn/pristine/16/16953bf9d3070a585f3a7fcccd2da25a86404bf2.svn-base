@@ -1,0 +1,105 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.bb;
+
+import com.ejca.ejb.CloudComManager;
+import com.ejca.ejb.PersonFacade;
+import com.ejca.ejb.SolicitBubbleFacade;
+import com.ejca.entity.Comment;
+import com.ejca.entity.Person;
+import com.ejca.entity.SolicitBubble;
+import com.ejca.entity.SolicitResponse;
+import java.awt.event.ActionEvent;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
+
+/**
+ *
+ * @author Nithya
+ */
+@SessionScoped
+@Named("solicit")
+public class SolicitBubbleBB implements Serializable {
+
+    @EJB
+    CloudComManager cloudComManager;
+    @EJB
+    SolicitBubbleFacade solicitBubbleFacade;
+    @EJB
+    PersonFacade personFacade;
+    private Comment comment;
+    private SolicitBubble solicitBubble;
+    private SolicitResponse solicitResponse;
+
+    @PostConstruct
+    public void init() {
+        comment = new Comment();
+        solicitBubble = new SolicitBubble();
+        solicitResponse = new SolicitResponse();
+    }
+
+    public SolicitBubble getSolicitBubble() {
+        
+        return solicitBubble;
+    }
+
+    public void setSolicitBubble(SolicitBubble solicitBubble) {
+        this.solicitBubble = solicitBubble;
+    }
+
+    public SolicitResponse getSolicitResponse() {
+        return solicitResponse;
+    }
+
+    public void setSolicitResponse(SolicitResponse solicitResponse) {
+        this.solicitResponse = solicitResponse;
+    }
+
+    public Comment getComment() {
+        return comment;
+    }
+
+    public void setComment(Comment comment) {
+        this.comment = comment;
+    }
+
+    public String createSolicitBubble() {
+
+        comment = new Comment();
+        Person p = personFacade.find(4);
+        Person r = personFacade.find(5);
+        SolicitResponse sr = new SolicitResponse();
+        sr.setPerson(p);
+        sr.setAttend(false);
+        SolicitResponse sr1 = new SolicitResponse();
+        sr1.setPerson(r);
+        sr1.setAttend(false);
+        ArrayList srList = new ArrayList();
+        srList.add(sr);
+        srList.add(sr1);
+        solicitBubble.setSolicitResponses(srList);
+        comment.setBubble(solicitBubble);
+        cloudComManager.createSolicit(comment);
+
+        return "/page/solicitDisplay.xhtml";
+    }
+
+    public String changeAttend() {
+        ArrayList<SolicitResponse> srList = solicitBubble.getSolicitResponses();
+        for (SolicitResponse sr : srList) {
+            if (sr.getId() == solicitResponse.getId()) {
+                sr.setAttend(solicitResponse.isAttend());
+            }
+        }
+        System.out.println("Check DB for attendance status");
+        cloudComManager.changeAttendance(comment);
+        return(null);
+    }
+}

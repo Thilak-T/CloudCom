@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <h:head>
+        <title>Login Form</title>
+    </h:head>
+        <h:body>
+        <h2>Hello, please log in:</h2>
+        <form method="post" action="j_security_check">
+            <table columns="2" role="presentation"> 
+                <tr>
+                    <td>Username:</td>
+                    <td><input type="text" name="j_username" 
+                                     size="20" /></td>
+                </tr>
+                <tr>
+                    <td>Password:</td>
+                    <td><input type="password" name="j_password" 
+                                       size="20"/></td>
+                </tr>
+            </table>
+            <p>
+                <input type="submit" value="Submit"/>
+            </p>
+        </form>
+        
+        
+        <h2>New User, Register Here:</h2>
+        <h:form id="register">
+            <table columns="2" role="presentation"> 
+                <tr>
+                    <td>Name:</td>
+                    <td><p:inputText id="name" value="#{register.person.name}" /></td>
+                </tr>
+                <tr>
+                    <td>Email Id:</td>
+                    <td><p:inputText id="username" value="#{register.person.email}" /></td>
+                </tr>
+                <tr>
+                    <td>Password:</td>
+                    <td><p:password value="#{register.person.password}" match="pwd2" feedback="true" required="true" id="pwd1" /></td>
+                </tr>
+                <tr>
+                    <td>Confirm Password:</td>
+                    <td><p:password value="#{register.person.password}" feedback="false" required="true" id="pwd2" /></td>
+                </tr>
+            </table>
+            <p>
+                <h:commandButton value="Register" action="#{register.registerPerson()}"/>
+                
+                <h:commandButton value="Cancel" />
+            </p>
+        </h:form>
+        
+    </h:body>
+</html>

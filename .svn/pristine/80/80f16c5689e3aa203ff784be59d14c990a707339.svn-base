@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Login Error</title>
+    </head>
+    <body>
+        <div>
+            <h2>Login Failed</h2>
+            <br/>
+            <a href="login.xhtml"> Back to Login</a>
+        
+        </div>
+    </body>
+</html>

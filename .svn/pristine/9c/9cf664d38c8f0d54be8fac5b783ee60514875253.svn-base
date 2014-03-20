@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:view contentType="text/html">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <title>CloudComm</title>
+            </f:facet>
+        </h:head>
+
+        <h:body>
+            
+            <h:form>  
+                  
+    <p:growl id="msg" showDetail="true" escape="false" />  
+  
+     
+    <h3>PickLists </h3>  
+    <p:pickList id="pojoPickList" value="#{testFile.chars}" var="charGoT" effect="bounce"  
+                    itemValue="#{charGoT}" itemLabel="#{charGoT.name}"  
+                    showSourceControls="true" showTargetControls="true" showCheckbox="true"  
+                    showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" >  
+  
+        <f:facet name="sourceCaption">All</f:facet>  
+        <f:facet name="targetCaption">Selected</f:facet>  
+  
+        <p:ajax event="transfer" listener="#{testFile.onTransfer}" update="msg" />  
+  
+        <p:column style="width:50%">  
+            <p:graphicImage value="#{charGoT.photo}" width="60" height="60" />  
+        </p:column>  
+  
+            <p:column style="width:50%;">  
+            #{charGoT.name}  
+        </p:column>  
+  
+    </p:pickList> 
+    
+    
+</h:form>  
+            
+            
+            
+            
+            
+            
+            
+             
+            
+            <h:form enctype="multipart/form-data">  
+  
+  
+    <p:fileUpload fileUploadListener="#{testFile.handleFileUpload}" mode="advanced" dragDropSupport="true"  
+            update="messages" sizeLimit="100000" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" />  
+  
+    <p:growl id="messages" showDetail="true"/>  
+  
+</h:form>  
+<h:form enctype="multipart/form-data">  
+  
+    <p:messages showDetail="true"/>  
+  
+    <p:fileUpload value="#{testFile.file}" mode="simple"/>  
+  
+    <p:commandButton value="Submit" ajax="false"  
+                actionListener="#{testFile.upload}"/>   
+</h:form>  
+
+        </h:body>
+
+    </f:view>
+</html>

@@ -1,0 +1,77 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ejca.components;
+
+import com.ejca.entity.Bubble;
+import com.ejca.entity.SurveyBubble;
+import com.ejca.entity.SurveyOptions;
+import com.ejca.entity.TextBubble;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+
+/**
+ *
+ * @author Thilak
+ */
+@Named
+@ViewScoped
+public class CreateBubble implements Serializable {
+    private String selection = "survey"; 
+    private Bubble bubble = new SurveyBubble();
+    private List<SurveyOptions> choices = new ArrayList<>();
+
+    public CreateBubble() {
+        incrementSurveyOptions();
+//        ((TextBubble)bubble).setMessage("HAI");
+    }
+    public List<SurveyOptions> getChoices() {
+        return choices;
+    }
+
+    public void setChoices(List<SurveyOptions> choices) {
+        this.choices = choices;
+    }
+    
+    public String getSelection() {
+        return selection;
+    }
+
+    public void setSelection(String selection) {
+        this.selection = selection;
+    }
+    
+    public Bubble getBubble() {
+        return bubble;
+    }
+
+    public void setBubble(Bubble bubble) {
+        this.bubble = bubble;
+    }
+    
+     public void incrementSurveyOptions() {
+        for(int i=0;i<3;i++)
+        choices.add(new SurveyOptions());
+    }
+    
+     public void saveOptions(int i) {
+         
+     }
+     
+    public void bubbleSelected() {
+        System.out.println("HAAAAAAAAAAAAAAAAAI");
+        if (selection.equals("text"))
+            bubble = new TextBubble();
+        else
+            bubble = new SurveyBubble();
+    }
+    
+    public String action() {
+        System.out.println("INNNNNNNNNNN CCCCCCCCCCCc");
+        return null;
+    }
+}

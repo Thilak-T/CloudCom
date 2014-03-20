@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:cc="http://java.sun.com/jsf/composite/ezcomp">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="body">
+            <h:form>
+                <p:panel header="View Discussion">  
+                    title=#{vb.discussion.title}
+                </p:panel>   
+
+                <p:panel header="Replies:" >
+
+                    <p:dataList value="#{vb.baseComments}" var="comment" id="baseDataList"
+                                paginator="true" rows="5"
+                                paginatorTemplate="{PreviousPageLink} {CurrentPageReport} {NextPageLink} {RowsPerPageDropdown}"
+                                rowsPerPageTemplate="5,10,15" type="none" rendered="#{not empty vb.baseComments}">
+
+                        <f:facet name="header">
+                           
+                        </f:facet>
+
+
+
+                        <cc:Comment  value="#{comment}" type="view"/>
+                    </p:dataList>
+                </p:panel>
+
+                <p:panel header="Create Reply:" >
+
+                    <cc:CreateComment  discussion="#{vb.discussion}"/>
+
+                </p:panel>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

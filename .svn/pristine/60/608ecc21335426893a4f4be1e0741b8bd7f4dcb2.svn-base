@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <script src="http://maps.google.com/maps/api/js?key=AIzaSyDYfZPdDIIXdfd_JvAE9ZOk11n3WyzTPPg&amp;sensor=false" ></script>
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:panel style="width:500px" toggleable="true" header="Bubble" > 
+                <f:facet name="header">
+                    
+                    <p:growl id="messages"/>  
+                    <p:menuButton value="Reply">  
+                    <p:menuitem value="Text" />  
+                    <p:menuitem value="Map" />  
+                    <p:menuitem value="Solicit" />  
+                    <p:menuitem value="Survey" />  
+                    </p:menuButton>  
+                    <h:commandLink value="Edit"></h:commandLink>
+                </f:facet>               
+                
+                <p:growl id="growl" showDetail="true"/>  
+                <p:ajax event="toggle" listener="#{map.handleToggle}" update="growl" />
+                <br/>
+                <h:panelGrid columns="2">
+                    <p:graphicImage value="/resources/img/boy.jpg" style="width:100px;height:120px;border: 2px solid;"/> 
+                    <p:outputLabel value="LoggedIn PersonName"></p:outputLabel>
+                </h:panelGrid>
+
+                <h:panelGrid columns="2" cellpadding="5">  
+                    <h:outputLabel for="address" value="Address:" style="font-weight: bold" />
+                    <h:inputText id="address" value="#{map.address}" />
+                    <h:outputLabel for="description" value="Description:" style="font-weight:bold"/>  
+                    <p:inputText id="description" value="#{map.description}" />
+                    <p:commandButton value="Submit" action="#{map.strCoordinates()}" /> 
+                </h:panelGrid> 
+                
+                             
+            </p:panel>   
+        </h:form>
+
+    </h:body>
+</html>
+
